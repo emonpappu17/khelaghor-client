@@ -21,8 +21,8 @@ export default function Navbar() {
     };
 
     return (
-        <header className="sticky inset-x-0 top-0 z-50 border-b border-white/5 bg-background/80 backdrop-blur-2xl">
-            <div className="mx-auto flex container items-center justify-between px-8 py-5">
+        <header className="sticky inset-x-0 top-0 z-50 border-b border-white/5 bg-background/20 backdrop-blur-2xl">
+            <div className="mx-auto flex max-w-7xl items-center justify-between px-8 py-5">
                 {/* Logo — outside <nav> since it is a site identity link, not navigation */}
                 <Link
                     href="/"

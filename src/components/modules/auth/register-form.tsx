@@ -1,0 +1,418 @@
+"use client"
+
+import { useActionState, useRef } from "react"
+import { useFormStatus } from "react-dom"
+import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import {
+    Field,
+    FieldDescription,
+    FieldGroup,
+    FieldLabel,
+    FieldSeparator,
+} from "@/components/ui/field"
+import { UserIcon, BuildingIcon, EyeIcon, EyeOffIcon, TriangleAlertIcon } from "lucide-react"
+import Link from "next/link"
+import { useState } from "react"
+import { registerAction, RegisterState } from "@/actions/auth.actions"
+
+type Role = "USER" | "HOST"
+
+interface RolePillProps {
+    value: Role
+    active: boolean
+    icon: React.ReactNode
+    label: string
+    sublabel: string
+    onClick: () => void
+}
+
+function SubmitButton({ role }: { role: Role }) {
+    const { pending } = useFormStatus()
+
+    return (
+        <Button
+            type="submit"
+            disabled={pending}
+            aria-disabled={pending}
+            className="w-full font-headline font-black uppercase tracking-widest transition-all active:scale-95 bg-primary-container text-on-primary-container hover:brightness-110 disabled:opacity-60 disabled:cursor-not-allowed"
+        >
+            {pending ? (
+                <span className="flex items-center gap-2">
+                    <svg
+                        className="h-4 w-4 animate-spin"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        aria-hidden="true"
+                    >
+                        <circle
+                            className="opacity-25"
+                            cx="12" cy="12" r="10"
+                            stroke="currentColor" strokeWidth="4"
+                        />
+                        <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                        />
+                    </svg>
+                    Creating account…
+                </span>
+            ) : role === "HOST" ? (
+                "Register as Host"
+            ) : (
+                "Create Account"
+            )}
+        </Button>
+    )
+}
+
+function FieldError({ messages, id }: { messages?: string[]; id?: string }) {
+    if (!messages?.length) return null
+    return (
+        <ul id={id} role="alert" aria-live="polite" className="mt-1 space-y-0.5">
+            {messages.map((msg, i) => (
+                <li key={i} className="text-xs font-medium text-destructive flex items-center gap-1">
+                    <TriangleAlertIcon className="h-3 w-3 shrink-0" aria-hidden="true" />
+                    {msg}
+                </li>
+            ))}
+        </ul>
+    )
+}
+
+function RolePill({ active, icon, label, sublabel, onClick }: RolePillProps) {
+    return (
+        <button
+            type="button"
+            role="radio"
+            aria-checked={active}
+            aria-label={`Register as ${label}`}
+            onClick={onClick}
+            className={cn(
+                "relative flex flex-1 flex-col items-center gap-2 rounded-xl border px-4 py-5 text-center transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container",
+                active
+                    ? "border-primary-container bg-primary-container/10 text-primary-container"
+                    : "border-white/10 bg-surface-container text-on-surface-variant hover:border-white/20 hover:bg-surface-container-high"
+            )}
+        >
+            <span
+                aria-hidden="true"
+                className={cn(
+                    "absolute right-3 top-3 h-2 w-2 rounded-full transition-colors",
+                    active ? "bg-primary-container" : "bg-white/10"
+                )}
+            />
+            <span
+                aria-hidden="true"
+                className={cn(
+                    "flex h-10 w-10 items-center justify-center rounded-full transition-colors",
+                    active
+                        ? "bg-primary-container/20 text-primary-container"
+                        : "bg-white/5 text-on-surface-variant"
+                )}
+            >
+                {icon}
+            </span>
+            <span className="font-headline text-sm font-black uppercase tracking-widest">
+                {label}
+            </span>
+            <span className={cn("text-[11px] leading-snug", active ? "text-primary-container/70" : "text-on-surface-variant")}>
+                {sublabel}
+            </span>
+        </button>
+    )
+}
+
+const initialState: RegisterState = {}
+
+export function RegisterForm({ className, ...props }: React.ComponentProps<"div">) {
+    const [role, setRole] = useState<Role>("USER")
+    const [showPassword, setShowPassword] = useState(false)
+
+    // useActionState wires the Server Action to the form:
+    // - `state`   → what the action returned (errors, fields, message)
+    // - `action`  → the bound action reference to pass to <form action={...}>
+    // - `pending` → true while the action is in-flight (alternative to useFormStatus)
+    const [state, action, pending] = useActionState<RegisterState, FormData>(
+        registerAction,
+        initialState
+    )
+
+    // Keep a ref to reset the password input on server error (never echo passwords)
+    const passwordRef = useRef<HTMLInputElement>(null)
+
+    const handleRoleChange = (r: Role) => setRole(r)
+
+    // Repopulate fields from the echoed `state.fields` on server validation error
+
+    console.log('state  ==>', state);
+    const f = state.fields
+
+    return (
+        <div className={cn("flex flex-col gap-5", className)} {...props}>
+            <form action={action} noValidate>
+                <FieldGroup>
+                    {/* ── Header ── */}
+                    <div className="flex flex-col gap-1 text-center">
+                        <h1 className="font-headline text-3xl font-black italic uppercase tracking-tight">
+                            Create Account
+                        </h1>
+                        <p className="text-sm text-on-surface-variant text-balance">
+                            Pick your role and get on the field.
+                        </p>
+                    </div>
+
+                    {/* ── Global / server error banner ── */}
+                    {state.errors?._form && (
+                        <div
+                            role="alert"
+                            aria-live="assertive"
+                            className="flex items-start gap-3 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive"
+                        >
+                            <TriangleAlertIcon className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+                            <div className="space-y-0.5">
+                                {state.errors._form.map((msg, i) => (
+                                    <p key={i}>{msg}</p>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* ── Role Selector ── */}
+                    <fieldset>
+                        <legend className="sr-only">Register as</legend>
+                        <div role="radiogroup" aria-label="Account type" className="flex gap-3">
+                            <RolePill
+                                value="USER"
+                                active={role === "USER"}
+                                icon={<UserIcon className="h-5 w-5" aria-hidden="true" />}
+                                label="Player"
+                                sublabel="Book fields & play"
+                                onClick={() => handleRoleChange("USER")}
+                            />
+                            <RolePill
+                                value="HOST"
+                                active={role === "HOST"}
+                                icon={<BuildingIcon className="h-5 w-5" aria-hidden="true" />}
+                                label="Host"
+                                sublabel="List & manage venues"
+                                onClick={() => handleRoleChange("HOST")}
+                            />
+                        </div>
+                    </fieldset>
+
+                    {/* Hidden role field — submitted with formData to the Server Action */}
+                    <input type="hidden" name="role" value={role} />
+
+                    {/* ── Name ── */}
+                    <Field>
+                        <FieldLabel htmlFor="name">Full Name</FieldLabel>
+                        <Input
+                            id="name"
+                            name="name"
+                            type="text"
+                            placeholder="Alex Rahman"
+                            autoComplete="name"
+                            // Repopulate on server error
+                            defaultValue={f?.name ?? ""}
+                            required
+                            minLength={2}
+                            aria-invalid={!!state.errors?.name}
+                            aria-describedby={state.errors?.name ? "name-error" : undefined}
+                            className="bg-background"
+                        />
+                        <FieldError id="name-error" messages={state.errors?.name} />
+                    </Field>
+
+                    {/* ── Business Name (HOST only) ── */}
+                    {role === "HOST" && (
+                        <Field>
+                            <FieldLabel htmlFor="business_name">
+                                Business Name
+                                <span className="ml-1 text-[10px] uppercase tracking-widest text-primary-container font-bold">
+                                    Host
+                                </span>
+                            </FieldLabel>
+                            <Input
+                                id="business_name"
+                                name="business_name"
+                                type="text"
+                                placeholder="Dhaka Sports Complex"
+                                autoComplete="organization"
+                                defaultValue={f?.business_name ?? ""}
+                                required={role === "HOST"}
+                                minLength={2}
+                                aria-invalid={!!state.errors?.business_name}
+                                aria-describedby={state.errors?.business_name ? "bname-error" : undefined}
+                                className="bg-background"
+                            />
+                            <FieldError id="bname-error" messages={state.errors?.business_name} />
+                        </Field>
+                    )}
+
+                    {/* ── Email ── */}
+                    <Field>
+                        <FieldLabel htmlFor="email">Email</FieldLabel>
+                        <Input
+                            id="email"
+                            name="email"
+                            type="email"
+                            placeholder="you@example.com"
+                            autoComplete="email"
+                            defaultValue={f?.email ?? ""}
+                            required
+                            aria-invalid={!!state.errors?.email}
+                            aria-describedby={state.errors?.email ? "email-error" : undefined}
+                            className="bg-background"
+                        />
+                        <FieldError id="email-error" messages={state.errors?.email} />
+                    </Field>
+
+                    {/* ── Password ── */}
+                    <Field>
+                        <FieldLabel htmlFor="password">Password</FieldLabel>
+                        <div className="relative">
+                            <Input
+                                id="password"
+                                name="password"
+                                ref={passwordRef}
+                                type={showPassword ? "text" : "password"}
+                                placeholder="Min. 6 characters"
+                                autoComplete="new-password"
+                                required
+                                minLength={6}
+                                aria-invalid={!!state.errors?.password}
+                                aria-describedby={state.errors?.password ? "pw-error" : undefined}
+                                className="bg-background pr-11"
+                            />
+                            <button
+                                type="button"
+                                aria-label={showPassword ? "Hide password" : "Show password"}
+                                onClick={() => setShowPassword((v) => !v)}
+                                tabIndex={0}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant transition hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary-container rounded"
+                            >
+                                {showPassword ? (
+                                    <EyeOffIcon className="h-4 w-4" aria-hidden="true" />
+                                ) : (
+                                    <EyeIcon className="h-4 w-4" aria-hidden="true" />
+                                )}
+                            </button>
+                        </div>
+                        <FieldError id="pw-error" messages={state.errors?.password} />
+                    </Field>
+
+                    {/* ── Phone (optional) ── */}
+                    <Field>
+                        <FieldLabel htmlFor="phone">
+                            Phone
+                            <span className="ml-1 text-[10px] uppercase tracking-widest text-on-surface-variant font-bold">
+                                Optional
+                            </span>
+                        </FieldLabel>
+                        <Input
+                            id="phone"
+                            name="phone"
+                            type="tel"
+                            placeholder="+880 1xxx xxxxxx"
+                            autoComplete="tel"
+                            defaultValue={f?.phone ?? ""}
+                            aria-invalid={!!state.errors?.phone}
+                            aria-describedby={state.errors?.phone ? "phone-error" : undefined}
+                            className="bg-background"
+                        />
+                        <FieldError id="phone-error" messages={state.errors?.phone} />
+
+                    </Field>
+
+                    {/* ── NID (HOST only, optional) ── */}
+                    {role === "HOST" && (
+                        <Field>
+                            <FieldLabel htmlFor="nid_number">
+                                NID Number
+                                <span className="ml-1 text-[10px] uppercase tracking-widest text-primary-container font-bold">
+                                    Host
+                                </span>
+                                <span className="ml-1 text-[10px] uppercase tracking-widest text-on-surface-variant font-bold">
+                                    · Optional
+                                </span>
+                            </FieldLabel>
+                            <Input
+                                id="nid_number"
+                                name="nid_number"
+                                type="text"
+                                inputMode="numeric"
+                                maxLength={10}
+                                placeholder="10-digit NID"
+                                defaultValue={f?.nid_number ?? ""}
+                                aria-invalid={!!state.errors?.nid_number}
+                                aria-describedby="nid-hint"
+                                className="bg-background tracking-widest"
+                            />
+                            <p id="nid-hint" className="text-[11px] text-on-surface-variant">
+                                Used to verify your identity as a venue host.
+                            </p>
+                            <FieldError id="nid-error" messages={state.errors?.nid_number} />
+                        </Field>
+                    )}
+
+                    {/* ── Submit — SubmitButton reads pending from useFormStatus ── */}
+                    <Field>
+                        <SubmitButton role={role} />
+                    </Field>
+
+                    <FieldSeparator>Or continue with</FieldSeparator>
+
+                    {/* ── Google OAuth — plain redirect, no action needed ── */}
+                    <Field>
+                        <Button
+                            variant="outline"
+                            type="button"
+                            className="w-full"
+                            onClick={() => {
+                                window.location.href = `${process.env.NEXT_PUBLIC_BASE_URL}/auth/google?redirect=/dashboard`
+                            }}
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                                className="mr-2 h-4 w-4"
+                                aria-hidden="true"
+                            >
+                                <path
+                                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                                    fill="#4285F4"
+                                />
+                                <path
+                                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                                    fill="#34A853"
+                                />
+                                <path
+                                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                                    fill="#FBBC05"
+                                />
+                                <path
+                                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                                    fill="#EA4335"
+                                />
+                            </svg>
+                            Continue with Google
+                        </Button>
+
+                        <FieldDescription className="text-center text-xs">
+                            Already have an account?{" "}
+                            <Link
+                                href="/login"
+                                className="font-bold text-primary-container underline-offset-4 hover:underline"
+                            >
+                                Sign in
+                            </Link>
+                        </FieldDescription>
+                    </Field>
+                </FieldGroup>
+            </form>
+        </div>
+    )
+}
