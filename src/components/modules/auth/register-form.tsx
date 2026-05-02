@@ -131,23 +131,15 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<"div"
     const [role, setRole] = useState<Role>("USER")
     const [showPassword, setShowPassword] = useState(false)
 
-    // useActionState wires the Server Action to the form:
-    // - `state`   → what the action returned (errors, fields, message)
-    // - `action`  → the bound action reference to pass to <form action={...}>
-    // - `pending` → true while the action is in-flight (alternative to useFormStatus)
     const [state, action, pending] = useActionState<RegisterState, FormData>(
         registerAction,
         initialState
     )
 
-    // Keep a ref to reset the password input on server error (never echo passwords)
     const passwordRef = useRef<HTMLInputElement>(null)
 
     const handleRoleChange = (r: Role) => setRole(r)
 
-    // Repopulate fields from the echoed `state.fields` on server validation error
-
-    console.log('state  ==>', state);
     const f = state.fields
 
     return (
