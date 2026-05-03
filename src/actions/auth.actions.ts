@@ -1,9 +1,10 @@
 "use server"
 
 import { zodErrors } from "@/actions/_helpers"
-import { apiFetch, mapApiErrors } from "@/lib/api"
-import type { ActionState, User } from "@/types/api.types"
+import { apiFetch, apiFetchRaw, forwardAuthCookies, mapApiErrors } from "@/lib/api"
+import type { ActionState, LoginData, User } from "@/types/api.types"
 import {
+    loginSchema,
     registerSchema
 } from "@/zod/auth.schemas"
 import { redirect } from "next/navigation"
@@ -64,3 +65,49 @@ export async function registerAction(
 
     redirect("/login?registered=true")
 }
+
+export type LoginState = ActionState<LoginData>
+
+export async function loginAction(
+    _prev: LoginState,
+    formData: FormData
+): Promise<LoginState> {
+    const raw = {
+        email: formData.get("email") as string,
+        password: formData.get("password") as string,
+    }
+
+    const parsed = loginSchema.safeParse(raw)
+    if (!parsed.success) {
+        return {
+            errors: zodErrors(parsed.error),
+            fields: { email: raw.email ?? "" },
+        }
+    }
+
+    // apiFetchRaw so we can capture and forward Set-Cookie headers
+    const response = await apiFetchRaw("/auth/login", {
+        method: "POST",
+        body: parsed.data,
+        withAuth: false,
+    })
+
+    const json: { success: boolean; message: string; data?: LoginData } =
+        await response.json().catch(() => ({
+            success: false,
+            message: "Failed to parse server response.",
+        }))
+
+    if (!response.ok || !json.success) {
+        return {
+            errors: { _form: [json.message ?? "Invalid email or password."] },
+            fields: { email: raw.email ?? "" },
+        }
+    }
+
+    // Mirror backend Set-Cookie (accessToken + refreshToken) into Next.js
+    await forwardAuthCookies(response)
+
+    redirect("/dashboard")
+}
+ 

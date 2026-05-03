@@ -63,6 +63,63 @@ export async function apiFetch<T = unknown>(
   return json
 }
 
+export async function apiFetchRaw(
+  endpoint: string,
+  { body, withAuth = false, headers: extraHeaders, ...rest }: FetchOptions = {}
+): Promise<Response> {
+  let cookieHeader: string | null = null
+
+  if (withAuth) {
+    const store = await cookies()
+    cookieHeader = store.toString()
+  }
+
+  const headers = buildHeaders(body, extraHeaders, cookieHeader)
+
+  return fetch(`${BASE_URL}${endpoint}`, {
+    ...rest,
+    headers,
+    body: serializeBody(body),
+    cache: "no-store",
+  })
+}
+
+export async function forwardAuthCookies(response: Response): Promise<void> {
+  const store = await cookies()
+
+  // getSetCookie() returns each Set-Cookie value as a separate string
+  const setCookies: string[] =
+    typeof response.headers.getSetCookie === "function"
+      ? response.headers.getSetCookie()
+      : [response.headers.get("set-cookie") ?? ""].filter(Boolean)
+
+  for (const cookieStr of setCookies) {
+    const parts = cookieStr.split(";").map((p) => p.trim())
+    const [nameValue] = parts
+    const eqIdx = nameValue.indexOf("=")
+    if (eqIdx === -1) continue
+
+    const name = nameValue.slice(0, eqIdx)
+    const value = nameValue.slice(eqIdx + 1)
+
+    const opts: Parameters<typeof store.set>[2] = {}
+
+    for (const part of parts.slice(1)) {
+      const lower = part.toLowerCase()
+      if (lower === "httponly") opts.httpOnly = true
+      else if (lower === "secure") opts.secure = true
+      else if (lower.startsWith("samesite="))
+        opts.sameSite = part.split("=")[1].toLowerCase() as "strict" | "lax" | "none"
+      else if (lower.startsWith("max-age="))
+        opts.maxAge = parseInt(part.split("=")[1], 10)
+      else if (lower.startsWith("path=")) opts.path = part.split("=")[1]
+      else if (lower.startsWith("domain=")) opts.domain = part.split("=")[1]
+    }
+
+    store.set(name, value, opts)
+  }
+}
+
 
 export function mapApiErrors(
   json: ApiResponse,
