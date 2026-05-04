@@ -4,6 +4,7 @@ import { zodErrors } from "@/actions/_helpers"
 import { apiFetch, apiFetchRaw, forwardAuthCookies, mapApiErrors } from "@/lib/api"
 import type { ActionState, LoginData, User } from "@/types/api.types"
 import {
+    forgotPasswordSchema,
     loginSchema,
     registerSchema,
     sendVerificationOtpSchema,
@@ -12,6 +13,10 @@ import {
 import { redirect } from "next/navigation"
 
 export type RegisterState = ActionState<Pick<User, "id" | "name" | "email" | "role">>
+export type LoginState = ActionState<LoginData>
+export type SendOtpState = ActionState<{ sent: boolean }>
+export type VerifyOtpState = ActionState<{ verified: boolean }>
+export type ForgotPasswordState = ActionState
 
 export async function registerAction(
     _prev: RegisterState,
@@ -68,8 +73,6 @@ export async function registerAction(
     redirect(`/verify-email?email=${encodeURIComponent(parsed.data.email)}`)
 }
 
-export type LoginState = ActionState<LoginData>
-
 export async function loginAction(
     _prev: LoginState,
     formData: FormData
@@ -113,8 +116,6 @@ export async function loginAction(
     redirect("/dashboard")
 }
 
-export type SendOtpState = ActionState<{ sent: boolean }>
-
 export async function sendVerificationOtpAction(
     email: string
 ): Promise<SendOtpState> {
@@ -140,8 +141,6 @@ export async function sendVerificationOtpAction(
 
     return { data: { sent: true } }
 }
-
-export type VerifyOtpState = ActionState<{ verified: boolean }>
 
 export async function verifyEmailOtpAction(
     email: string,
@@ -169,4 +168,28 @@ export async function verifyEmailOtpAction(
 
     return { data: { verified: true } }
 }
- 
+
+export async function forgotPasswordAction(
+    _prev: ForgotPasswordState,
+    formData: FormData
+): Promise<ForgotPasswordState> {
+    const raw = { email: formData.get("email") as string }
+    const parsed = forgotPasswordSchema.safeParse(raw)
+
+    if (!parsed.success) {
+        return { errors: zodErrors(parsed.error), fields: { email: raw.email ?? "" } }
+    }
+
+    const res = await apiFetch("/auth/forgot-password", {
+        method: "POST",
+        body: parsed.data,
+        withAuth: false,
+        cache: "no-store",
+    })
+
+    if (!res.success) {
+        return { errors: { _form: [res.message ?? "Failed to send OTP."] } }
+    }
+
+    return { success: true, message: res.message ?? "OTP sent to your email." }
+}

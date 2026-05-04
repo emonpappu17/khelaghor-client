@@ -32,3 +32,7 @@ export const verifyEmailOtpSchema = z.object({
     email: z.email("Invalid email address"),
     otp: z.number().int().min(100000).max(999999),
 })
+
+export const forgotPasswordSchema = z.object({
+  email: z.email("Invalid email address"),
+})
