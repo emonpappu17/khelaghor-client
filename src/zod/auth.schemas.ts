@@ -23,3 +23,12 @@ export const loginSchema = z.object({
     email: z.email("Invalid email address"),
     password: z.string().min(1, "Password is required"),
 })
+
+export const sendVerificationOtpSchema = z.object({
+    email: z.email("Invalid email address"),
+})
+
+export const verifyEmailOtpSchema = z.object({
+    email: z.email("Invalid email address"),
+    otp: z.number().int().min(100000).max(999999),
+})

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Lexend } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
+import { Toaster } from "@/components/ui/sonner"
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const lexend = Lexend({ subsets: ['latin'], variable: '--font-lexend' });
@@ -22,7 +23,12 @@ export default function RootLayout({
       lang="en"
       className={cn("dark", "h-full", "antialiased", inter.variable, lexend.variable)}
     >
-      <body className="min-h-full flex flex-col font-body bg-background text-on-surface selection:bg-primary-container selection:text-on-primary-container">{children}</body>
+      <body className="min-h-full flex flex-col font-body bg-background text-on-surface selection:bg-primary-container selection:text-on-primary-container">
+        {children}
+
+        <Toaster position="top-center" />
+
+      </body>
     </html>
   );
 }
