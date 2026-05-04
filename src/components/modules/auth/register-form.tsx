@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import {
     Field,
     FieldDescription,
+    FieldError,
     FieldGroup,
     FieldLabel,
     FieldSeparator,
@@ -65,20 +66,6 @@ function SubmitButton({ role }: { role: Role }) {
                 "Create Account"
             )}
         </Button>
-    )
-}
-
-function FieldError({ messages, id }: { messages?: string[]; id?: string }) {
-    if (!messages?.length) return null
-    return (
-        <ul id={id} role="alert" aria-live="polite" className="mt-1 space-y-0.5">
-            {messages.map((msg, i) => (
-                <li key={i} className="text-xs font-medium text-destructive flex items-center gap-1">
-                    <TriangleAlertIcon className="h-3 w-3 shrink-0" aria-hidden="true" />
-                    {msg}
-                </li>
-            ))}
-        </ul>
     )
 }
 

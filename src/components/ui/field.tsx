@@ -177,13 +177,25 @@ function FieldError({
   className,
   children,
   errors,
+  messages,
   ...props
 }: React.ComponentProps<"div"> & {
   errors?: Array<{ message?: string } | undefined>
+  messages?: string[]
 }) {
   const content = useMemo(() => {
     if (children) {
       return children
+    }
+
+    if (messages?.length) {
+      return (
+        <ul className="ml-4 flex list-disc flex-col gap-1">
+          {messages.map((message, index) => (
+            <li key={index}>{message}</li>
+          ))}
+        </ul>
+      )
     }
 
     if (!errors?.length) {
@@ -206,7 +218,7 @@ function FieldError({
         )}
       </ul>
     )
-  }, [children, errors])
+  }, [children, errors, messages])
 
   if (!content) {
     return null
