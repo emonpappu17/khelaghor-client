@@ -200,7 +200,6 @@ export async function forgotPasswordAction(
     return { success: true, message: res.message ?? "OTP sent to your email." }
 }
 
-
 export async function verifyOtpAction(
   _prev: VerifyOtpState,
   formData: FormData
@@ -228,7 +227,6 @@ export async function verifyOtpAction(
 
   return { success: true, message: res.message, data: res.data }
 }
-
 
 export async function resetPasswordAction(
   _prev: ResetPasswordState,
