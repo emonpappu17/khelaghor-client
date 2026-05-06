@@ -55,11 +55,13 @@ export type ApiResponse<T = unknown> = {
   errors?: ApiError[]
 }
 
-
 export type AuthUser = Pick<User, "id" | "name" | "email" | "role" | "avatar">
-
 
 export type LoginData = {
   accessToken: string
   user: AuthUser
+}
+
+export type OtpVerifyData = {
+  resetToken: string
 }

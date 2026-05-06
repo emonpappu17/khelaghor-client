@@ -2,21 +2,27 @@
 
 import { zodErrors } from "@/actions/_helpers"
 import { apiFetch, apiFetchRaw, forwardAuthCookies, mapApiErrors } from "@/lib/api"
-import type { ActionState, LoginData, User } from "@/types/api.types"
+import type { ActionState, LoginData, OtpVerifyData, User } from "@/types/api.types"
 import {
     forgotPasswordSchema,
     loginSchema,
     registerSchema,
+    resetPasswordSchema,
     sendVerificationOtpSchema,
-    verifyEmailOtpSchema
+    verifyEmailOtpSchema,
+    verifyOtpSchema
 } from "@/zod/auth.schemas"
 import { redirect } from "next/navigation"
 
 export type RegisterState = ActionState<Pick<User, "id" | "name" | "email" | "role">>
 export type LoginState = ActionState<LoginData>
 export type SendOtpState = ActionState<{ sent: boolean }>
-export type VerifyOtpState = ActionState<{ verified: boolean }>
+export type VerifyEmailOtpState = ActionState<{ verified: boolean }>
 export type ForgotPasswordState = ActionState
+export type ResetPasswordState = ActionState
+export type VerifyOtpState = ActionState<OtpVerifyData>
+
+
 
 export async function registerAction(
     _prev: RegisterState,
@@ -145,7 +151,7 @@ export async function sendVerificationOtpAction(
 export async function verifyEmailOtpAction(
     email: string,
     otp: number
-): Promise<VerifyOtpState> {
+): Promise<VerifyEmailOtpState> {
     const parsed = verifyEmailOtpSchema.safeParse({ email, otp })
     if (!parsed.success) {
         return {
@@ -153,7 +159,7 @@ export async function verifyEmailOtpAction(
         }
     }
 
-    const res = await apiFetch<VerifyOtpState["data"]>("/auth/verify-email-otp", {
+    const res = await apiFetch<VerifyEmailOtpState["data"]>("/auth/verify-email-otp", {
         method: "POST",
         body: parsed.data,
         withAuth: false,
@@ -192,4 +198,67 @@ export async function forgotPasswordAction(
     }
 
     return { success: true, message: res.message ?? "OTP sent to your email." }
+}
+
+
+export async function verifyOtpAction(
+  _prev: VerifyOtpState,
+  formData: FormData
+): Promise<VerifyOtpState> {
+  const raw = {
+    email: formData.get("email") as string,
+    otp: formData.get("otp") as string,
+  }
+  const parsed = verifyOtpSchema.safeParse(raw)
+
+  if (!parsed.success) {
+    return { errors: zodErrors(parsed.error), fields: { email: raw.email ?? "" } }
+  }
+
+  const res = await apiFetch<OtpVerifyData>("/auth/verify-otp", {
+    method: "POST",
+    body: parsed.data,
+    withAuth: false,
+    cache: "no-store",
+  })
+
+  if (!res.success) {
+    return { errors: { _form: [res.message ?? "OTP verification failed."] } }
+  }
+
+  return { success: true, message: res.message, data: res.data }
+}
+
+
+export async function resetPasswordAction(
+  _prev: ResetPasswordState,
+  formData: FormData
+): Promise<ResetPasswordState> {
+  const raw = {
+    email: formData.get("email") as string,
+    password: formData.get("password") as string,
+    resetToken: formData.get("resetToken") as string,
+  }
+  const parsed = resetPasswordSchema.safeParse(raw)
+
+  if (!parsed.success) {
+    return { errors: zodErrors(parsed.error), fields: { email: raw.email ?? "" } }
+  }
+
+  const { resetToken, ...body } = parsed.data
+
+  // resetToken goes in Authorization header (not Bearer-prefixed — per API docs)
+  const res = await apiFetch("/auth/reset-password", {
+    method: "POST",
+    body,
+    withAuth: false,
+    headers: { Authorization: resetToken },
+    cache: "no-store",
+  })
+
+  if (!res.success) {
+    return { errors: { _form: [res.message ?? "Password reset failed."] } }
+  }
+
+  redirect("/login?passwordReset=true")
 }
