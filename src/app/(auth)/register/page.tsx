@@ -5,15 +5,11 @@ import Image from "next/image"
 import Link from "next/link"
 import type { Metadata } from "next"
 
-// ─── Metadata — generated at build time, no client JS needed ─────────────────
-
 export const metadata: Metadata = {
     title: "Create Account | Khelaghor",
     description:
         "Join 20,000+ athletes and venue hosts on Khelaghor. Book sports fields or list your venue in minutes.",
 }
-
-// ─── Page — pure Server Component ────────────────────────────────────────────
 
 export default function RegisterPage() {
     return (

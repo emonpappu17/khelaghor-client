@@ -6,15 +6,11 @@ import Image from "next/image"
 import Link from "next/link"
 import type { Metadata } from "next"
 
-// ─── Metadata ─────────────────────────────────────────────────────────────────
-
 export const metadata: Metadata = {
     title: "Sign In | Khelaghor",
     description:
         "Sign in to your Khelaghor account to book sports fields or manage your venue.",
 }
-
-// ─── Page — pure Server Component ────────────────────────────────────────────
 
 export default function LoginPage() {
     return (

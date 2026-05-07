@@ -1,4 +1,3 @@
-// import { ForgotPasswordForm } from "@/components/modules/auth/forgot-password-form"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { LayoutBottomIcon } from "@hugeicons/core-free-icons"
 import Image from "next/image"
