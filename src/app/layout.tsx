@@ -26,7 +26,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col font-body bg-background text-on-surface selection:bg-primary-container selection:text-on-primary-container">
         {children}
 
-        <Toaster position="top-center" />
+        <Toaster position="bottom-center" richColors />
 
       </body>
     </html>

@@ -20,6 +20,7 @@ import { HugeiconsIcon } from "@hugeicons/react"
 import { useActionState, useEffect, useState } from "react"
 import { FormError } from "./FormError"
 import { SubmitButton } from "./SubmitButton"
+import { toast } from "sonner"
 
 const otpInitial: VerifyOtpState = {}
 
@@ -41,8 +42,10 @@ export function Step2Otp({
     useEffect(() => {
         if (state.success && state.data?.resetToken) {
             onSuccess(state.data.resetToken)
+            toast.success(state.message)
+
         }
-    }, [state.success, state.data, onSuccess])
+    }, [state.success, state.message, state.data, onSuccess])
 
     return (
         <form action={action} noValidate>

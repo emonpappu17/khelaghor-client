@@ -20,6 +20,7 @@ import Link from "next/link"
 import { useActionState, useEffect, useRef } from "react"
 import { FormError } from "./FormError"
 import { SubmitButton } from "./SubmitButton"
+import { toast } from "sonner"
 
 const fpInitial: ForgotPasswordState = {}
 
@@ -47,9 +48,10 @@ export function Step1Email({ onSuccess }: { onSuccess: (email: string) => void }
     useEffect(() => {
         if (state.success) {
             onSuccess(emailRef.current)
+            toast.success(state.message)
         }
-    }, [state.success, onSuccess])
-
+    }, [state.success, state.message, onSuccess])
+    // console.log('state', state);
     return (
         <form
             action={(fd) => {

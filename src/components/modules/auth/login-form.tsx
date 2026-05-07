@@ -1,11 +1,7 @@
 "use client"
 
-import { useActionState, useRef, useEffect } from "react"
-import { useFormStatus } from "react-dom"
-import { useSearchParams } from "next/navigation"
-import { cn } from "@/lib/utils"
+import { loginAction, type LoginState } from "@/actions/auth.actions"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import {
     Field,
     FieldDescription,
@@ -13,59 +9,19 @@ import {
     FieldGroup,
     FieldLabel,
 } from "@/components/ui/field"
+import { Input } from "@/components/ui/input"
+import { cn } from "@/lib/utils"
 import {
+    CheckCircleIcon,
     EyeIcon,
     EyeOffIcon,
     TriangleAlertIcon,
-    CheckCircleIcon,
 } from "lucide-react"
 import Link from "next/link"
-import { useState } from "react"
-import { loginAction, type LoginState } from "@/actions/auth.actions"
+import { useSearchParams } from "next/navigation"
+import { useActionState, useEffect, useRef, useState } from "react"
+import { SubmitButton } from "./SubmitButton"
 
-// ── Submit button — reads pending from useFormStatus ─────────────────────────
-
-function SubmitButton() {
-    const { pending } = useFormStatus()
-
-    return (
-        <Button
-            type="submit"
-            disabled={pending}
-            aria-disabled={pending}
-            className="w-full font-headline font-black uppercase tracking-widest transition-all active:scale-95 bg-primary-container text-on-primary-container hover:brightness-110 disabled:opacity-60 disabled:cursor-not-allowed"
-        >
-            {pending ? (
-                <span className="flex items-center gap-2">
-                    <svg
-                        className="h-4 w-4 animate-spin"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        aria-hidden="true"
-                    >
-                        <circle
-                            className="opacity-25"
-                            cx="12" cy="12" r="10"
-                            stroke="currentColor" strokeWidth="4"
-                        />
-                        <path
-                            className="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                        />
-                    </svg>
-                    Signing in…
-                </span>
-            ) : (
-                "Sign In"
-            )}
-        </Button>
-    )
-}
-
-// ── Inline field error ────────────────────────────────────────────────────────
-
-// ── Main form ─────────────────────────────────────────────────────────────────
 
 const initialState: LoginState = {}
 
@@ -211,7 +167,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
 
                     {/* ── Submit ── */}
                     <Field>
-                        <SubmitButton />
+                        <SubmitButton label="Sign In" pendingLabel="Signing in..." />
                     </Field>
 
                     {/* ── Divider ── */}

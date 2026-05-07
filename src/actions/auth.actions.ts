@@ -194,69 +194,72 @@ export async function forgotPasswordAction(
     })
 
     if (!res.success) {
-        return { errors: { _form: [res.message ?? "Failed to send OTP."] } }
+        return {
+            errors: { _form: [res.message ?? "Failed to send OTP."] },
+            fields: { email: raw.email ?? "" },
+        }
     }
 
     return { success: true, message: res.message ?? "OTP sent to your email." }
 }
 
 export async function verifyOtpAction(
-  _prev: VerifyOtpState,
-  formData: FormData
+    _prev: VerifyOtpState,
+    formData: FormData
 ): Promise<VerifyOtpState> {
-  const raw = {
-    email: formData.get("email") as string,
-    otp: formData.get("otp") as string,
-  }
-  const parsed = verifyOtpSchema.safeParse(raw)
+    const raw = {
+        email: formData.get("email") as string,
+        otp: formData.get("otp") as string,
+    }
+    const parsed = verifyOtpSchema.safeParse(raw)
 
-  if (!parsed.success) {
-    return { errors: zodErrors(parsed.error), fields: { email: raw.email ?? "" } }
-  }
+    if (!parsed.success) {
+        return { errors: zodErrors(parsed.error), fields: { email: raw.email ?? "" } }
+    }
 
-  const res = await apiFetch<OtpVerifyData>("/auth/verify-otp", {
-    method: "POST",
-    body: parsed.data,
-    withAuth: false,
-    cache: "no-store",
-  })
+    const res = await apiFetch<OtpVerifyData>("/auth/verify-otp", {
+        method: "POST",
+        body: parsed.data,
+        withAuth: false,
+        cache: "no-store",
+    })
 
-  if (!res.success) {
-    return { errors: { _form: [res.message ?? "OTP verification failed."] } }
-  }
+    if (!res.success) {
+        return { errors: { _form: [res.message ?? "OTP verification failed."] } }
+    }
 
-  return { success: true, message: res.message, data: res.data }
+    return { success: true, message: res.message, data: res.data }
 }
 
 export async function resetPasswordAction(
-  _prev: ResetPasswordState,
-  formData: FormData
+    _prev: ResetPasswordState,
+    formData: FormData
 ): Promise<ResetPasswordState> {
-  const raw = {
-    email: formData.get("email") as string,
-    password: formData.get("password") as string,
-    resetToken: formData.get("resetToken") as string,
-  }
-  const parsed = resetPasswordSchema.safeParse(raw)
+    const raw = {
+        email: formData.get("email") as string,
+        password: formData.get("password") as string,
+        resetToken: formData.get("resetToken") as string,
+    }
+    const parsed = resetPasswordSchema.safeParse(raw)
 
-  if (!parsed.success) {
-    return { errors: zodErrors(parsed.error), fields: { email: raw.email ?? "" } }
-  }
+    if (!parsed.success) {
+        return { errors: zodErrors(parsed.error), fields: { email: raw.email ?? "" } }
+    }
 
-  const { resetToken, ...body } = parsed.data
+    const { resetToken, ...body } = parsed.data
 
-  // resetToken goes in Authorization header (not Bearer-prefixed — per API docs)
-  const res = await apiFetch("/auth/reset-password", {
-    method: "POST",
-    body,
-    withAuth: false,
-    headers: { Authorization: resetToken },
-    cache: "no-store",
-  })
+    // resetToken goes in Authorization header (not Bearer-prefixed — per API docs)
+    const res = await apiFetch("/auth/reset-password", {
+        method: "POST",
+        body,
+        withAuth: false,
+        headers: { Authorization: resetToken },
+        cache: "no-store",
+    })
 
-  if (!res.success) {
-    return { errors: { _form: [res.message ?? "Password reset failed."] } }
-  }
+    if (!res.success) {
+        return { errors: { _form: [res.message ?? "Password reset failed."] } }
+    }
 
-  redirect("/login?passwordReset=true")
+    redirect("/login?passwordReset=true")
 }
