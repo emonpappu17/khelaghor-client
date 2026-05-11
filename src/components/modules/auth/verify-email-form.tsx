@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/field"
 import { TriangleAlertIcon, MailIcon, RefreshCwIcon } from "lucide-react"
 import Link from "next/link"
-import { sendVerificationOtpAction, verifyEmailOtpAction, SendOtpState, VerifyOtpState } from "@/actions/auth.actions"
+import { sendVerificationOtpAction, verifyEmailOtpAction, SendOtpState, VerifyOtpState, VerifyEmailOtpState } from "@/actions/auth.actions"
 import { useRouter } from "next/navigation"
 
 export function VerifyEmailForm({ className, ...props }: React.ComponentProps<"div">) {
@@ -28,8 +28,8 @@ export function VerifyEmailForm({ className, ...props }: React.ComponentProps<"d
         () => sendVerificationOtpAction(email),
         {}
     )
-    const [verifyState, verifyAction, verifyPending] = useActionState<VerifyOtpState, void>(
-        async (_prev: VerifyOtpState): Promise<VerifyOtpState> => {
+    const [verifyState, verifyAction, verifyPending] = useActionState<VerifyEmailOtpState, void>(
+        async (_prev: VerifyEmailOtpState): Promise<VerifyEmailOtpState> => {
             const otp = parseInt(otpValue)
             return await verifyEmailOtpAction(email, otp)
         },
