@@ -1,3 +1,4 @@
+import "server-only"
 import { ApiResponse } from "@/types/api.types"
 import { cookies } from "next/headers"
 
@@ -80,7 +81,7 @@ export async function apiFetchRaw(
     ...rest,
     headers,
     body: serializeBody(body),
-    cache: "no-store",
+    // cache: "no-store",
   })
 }
 

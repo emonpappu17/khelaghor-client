@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use server"
 
@@ -5,6 +6,7 @@ import { UserRole } from "@/types/api.types";
 import jwt from "jsonwebtoken";
 import { ResponseCookie } from "next/dist/compiled/@edge-runtime/cookies";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 export type TJwtPayload = {
     userId: string;
@@ -51,9 +53,10 @@ export const verifyAccessToken = async (token: string) => {
             payload: verifyAccessToken as TJwtPayload
         };;
     } catch (error: any) {
-        return {
-            success: false,
-            message: error?.message || "Invalid access token",
-        }
+        redirect('/login')
+        // return {
+        //     success: false,
+        //     message: error?.message || "Invalid access token",
+        // }
     }
 }
