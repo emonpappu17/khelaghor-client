@@ -3,6 +3,7 @@ import { Inter, Lexend } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { Toaster } from "@/components/ui/sonner"
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const lexend = Lexend({ subsets: ['latin'], variable: '--font-lexend' });
@@ -24,7 +25,7 @@ export default function RootLayout({
       className={cn("dark", "h-full", "antialiased", inter.variable, lexend.variable)}
     >
       <body className="min-h-full flex flex-col font-body bg-background text-on-surface selection:bg-primary-container selection:text-on-primary-container">
-        {children}
+        <TooltipProvider>{children}</TooltipProvider>
 
         <Toaster position="bottom-center" richColors />
 
