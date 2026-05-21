@@ -60,3 +60,17 @@ export const verifyAccessToken = async (token: string) => {
         // }
     }
 }
+
+export const verifyTokenUser = async () => {
+    try {
+        const token = await getCookie('accessToken');
+
+        return jwt.verify(
+            token as string,
+            process.env.JWT_ACCESS_SECRET as string
+        ) as jwt.JwtPayload;
+
+    } catch (error: any) {
+        redirect('/login')
+    }
+}
