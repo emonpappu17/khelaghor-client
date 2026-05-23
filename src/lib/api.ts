@@ -129,14 +129,14 @@ export function mapApiErrors(
   const result: Record<string, string[]> = {}
 
   for (const err of json.errors ?? []) {
-    console.log('fist');
+    // console.log('fist');
 
     const key = err.field && allowedFields.includes(err.field) ? err.field : "_form"
     result[key] = [...(result[key] ?? []), err.message]
   }
 
   if (!Object.keys(result).length) {
-    console.log('second');
+    // console.log('second');
     result._form = [json.message ?? "An unexpected error occurred."]
   }
 

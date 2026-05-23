@@ -2,7 +2,8 @@
 
 import { zodErrors } from "@/actions/_helpers"
 import { apiFetch, apiFetchRaw, forwardAuthCookies, mapApiErrors } from "@/lib/api"
-import type { ActionState, LoginData, OtpVerifyData, User } from "@/types/api.types"
+import { getDefaultDashboardRoute } from "@/lib/route.config"
+import type { ActionState, LoginData, OtpVerifyData, User, UserRole } from "@/types/api.types"
 import {
     forgotPasswordSchema,
     loginSchema,
@@ -118,8 +119,8 @@ export async function loginAction(
 
     // Mirror backend Set-Cookie (accessToken + refreshToken) into Next.js
     await forwardAuthCookies(response)
-
-    redirect("/dashboard")
+    const route = getDefaultDashboardRoute(json.data?.user.role as UserRole)
+    redirect(route)
 }
 
 export async function sendVerificationOtpAction(

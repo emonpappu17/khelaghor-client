@@ -10,14 +10,6 @@ export default async function Layout({
     const currentUser = await getCurrentUser();
     console.log(currentUser);
     return (
-        // <main className="min-h-screen flex flex-col">
-        //     <Navbar></Navbar>
-        //     <div className="grow">
-        //         {children}
-        //     </div>
-        //     <Footer></Footer>
-        // </main>
-
         <>
             <Navbar />
             <main className="min-h-screen">
