@@ -2,6 +2,7 @@
 
 import { zodErrors } from "@/actions/_helpers"
 import { apiFetch, apiFetchRaw, forwardAuthCookies, mapApiErrors } from "@/lib/api"
+import { deleteCookie } from "@/lib/cookie"
 import { getDefaultDashboardRoute } from "@/lib/route.config"
 import type { ActionState, LoginData, OtpVerifyData, User, UserRole } from "@/types/api.types"
 import {
@@ -13,6 +14,7 @@ import {
     verifyEmailOtpSchema,
     verifyOtpSchema
 } from "@/zod/auth.schemas"
+import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 
 export type RegisterState = ActionState<Pick<User, "id" | "name" | "email" | "role">>
@@ -263,4 +265,15 @@ export async function resetPasswordAction(
     }
 
     redirect("/login?passwordReset=true")
+}
+
+
+
+export async function logoutAction(): Promise<void> {
+    await apiFetch("/auth/logout", { method: "POST", cache: "no-store" })
+
+    deleteCookie("accessToken")
+    deleteCookie("refreshToken")
+
+    redirect("/login")
 }
