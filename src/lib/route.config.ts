@@ -15,7 +15,7 @@ export const ROUTES = {
     RESET_PASSWORD: "/reset-password",
 
     // Shared dashboard
-    DASHBOARD: "/dashboard",
+    // DASHBOARD: "/dashboard",
     PROFILE: "/dashboard/profile",
     SETTINGS: "/dashboard/settings",
 
@@ -78,10 +78,10 @@ export const ROLE_GATES: RoleGate[] = [
     },
 
     //  COMMON DASHBOARD 
-    {
-        prefix: "/dashboard",
-        roles: ["USER", "HOST", "ADMIN", "SUPER_ADMIN"],
-    },
+    // {
+    //     prefix: "/dashboard",
+    //     roles: ["USER", "HOST", "ADMIN", "SUPER_ADMIN"],
+    // },
 ];
 
 export function isPublicRoute(pathname: string): boolean {
@@ -139,8 +139,8 @@ export function getDefaultDashboardRoute(
     }
 }
 
-export const REDIRECT = {
-    AFTER_LOGIN: "/dashboard",
-    AFTER_LOGOUT: "/login",
-    UNAUTHORIZED: "/dashboard",
-} as const;
+// export const REDIRECT = {
+//     AFTER_LOGIN: "/dashboard",
+//     AFTER_LOGOUT: "/login",
+//     UNAUTHORIZED: "/dashboard",
+// } as const;

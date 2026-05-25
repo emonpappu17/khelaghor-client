@@ -6,16 +6,8 @@ import { apiFetch } from "@/lib/api"
 
 import type { ApiResponse, User } from "@/types/api.types"
 
-/**
- * Current authenticated user
- *
- * - Fresh runtime data
- * - Deduplicated during render
- * - Safe for Navbar, Sidebar, Dashboard, etc.
- */
 export const getCurrentUser = cache(
     async (): Promise<ApiResponse<User> | null> => {
-        // console.log('called');
         const response = await apiFetch<User>(
             "/users/me"
         )

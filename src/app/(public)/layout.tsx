@@ -2,6 +2,7 @@ import Footer from "@/components/layout/Footer"
 import Navbar from "@/components/layout/Navbar"
 import { getCurrentUser } from "@/queries/user.queries"
 
+
 export default async function Layout({
     children,
 }: {

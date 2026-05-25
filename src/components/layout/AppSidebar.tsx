@@ -11,12 +11,13 @@ import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
 import { TeamSwitcher } from "@/components/team-switcher";
 
-import { TJwtPayload, verifyTokenUser } from "@/lib/cookie";
 
 import {
   getNavItemsByRole,
 } from "@/lib/sidebar.config";
 import { getCurrentUser } from "@/queries/user.queries";
+import { UserRole } from "@/types/api.types";
+
 
 const teams = [
   {
@@ -33,10 +34,9 @@ const teams = [
 export async function AppSidebar(
   props: React.ComponentProps<typeof Sidebar>
 ) {
-  const user = await verifyTokenUser() as TJwtPayload;
-
-  const navItems = getNavItemsByRole(user.role);
   const currentUser = await getCurrentUser();
+
+  const navItems = getNavItemsByRole(currentUser?.data?.role as UserRole);
 
   return (
     <Sidebar
