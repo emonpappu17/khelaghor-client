@@ -1,5 +1,3 @@
-import * as React from "react";
-
 import {
   Sidebar,
   SidebarContent,
@@ -7,16 +5,12 @@ import {
   SidebarHeader,
 } from "@/components/ui/sidebar";
 
-import { NavMain } from "@/components/nav-main";
-import { NavUser } from "@/components/nav-user";
 import { TeamSwitcher } from "@/components/team-switcher";
-
-
-import {
-  getNavItemsByRole,
-} from "@/lib/sidebar.config";
-import { getCurrentUser } from "@/queries/user.queries";
-import { UserRole } from "@/types/api.types";
+import { Suspense } from "react";
+import { NavMainAsync } from "./NavMainAsync";
+import { NavMainSkeleton } from "./NavMainSkeleton";
+import { NavUserAsync } from "./NavUserAsync";
+import { NavUserSkeleton } from "./NavUserSkeleton";
 
 
 const teams = [
@@ -34,32 +28,23 @@ const teams = [
 export async function AppSidebar(
   props: React.ComponentProps<typeof Sidebar>
 ) {
-  const currentUser = await getCurrentUser();
-
-  const navItems = getNavItemsByRole(currentUser?.data?.role as UserRole);
 
   return (
-    <Sidebar
-      variant="floating"
-      collapsible="icon"
-      {...props}
-    >
+    <Sidebar variant="floating" collapsible="icon" {...props}>
       <SidebarHeader>
         <TeamSwitcher teams={teams} />
       </SidebarHeader>
 
       <SidebarContent>
-        <NavMain items={navItems} />
+        <Suspense fallback={<NavMainSkeleton />}>
+          <NavMainAsync />
+        </Suspense>
       </SidebarContent>
 
       <SidebarFooter>
-        <NavUser
-          user={{
-            name: currentUser?.data?.name as string,
-            email: currentUser?.data?.email as string,
-            avatar: currentUser?.data?.avatar as string ?? "",
-          }}
-        />
+        <Suspense fallback={<NavUserSkeleton />}>
+          <NavUserAsync />
+        </Suspense>
       </SidebarFooter>
     </Sidebar>
   );
