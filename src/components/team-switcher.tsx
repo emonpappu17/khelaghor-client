@@ -1,15 +1,58 @@
+// "use client"
+
+// import {
+//   SidebarMenu,
+//   SidebarMenuButton,
+//   SidebarMenuItem,
+//   useSidebar,
+// } from "@/components/ui/sidebar"
+// import { UnfoldMoreIcon } from "@hugeicons/core-free-icons"
+// import { HugeiconsIcon } from "@hugeicons/react"
+// import { useState } from "react"
+
+// export function TeamSwitcher({
+//   teams,
+// }: {
+//   teams: {
+//     name: string
+//     logo: React.ReactNode
+//     plan: string
+//   }[]
+// }) {
+//   // const { isMobile } = useSidebar()
+//   const [activeTeam, setActiveTeam] = useState(teams[0])
+
+//   if (!activeTeam) {
+//     return null
+//   }
+
+//   return (
+//     <SidebarMenu>
+//       <SidebarMenuItem>
+//         <SidebarMenuButton
+//           size="lg"
+//           className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+//         >
+//           <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+//             {activeTeam.logo}
+//           </div>
+//           <div className="grid flex-1 text-left text-sm leading-tight">
+//             <span className="truncate font-medium">{activeTeam.name}</span>
+//             <span className="truncate text-xs">{activeTeam.plan}</span>
+//           </div>
+//           <HugeiconsIcon icon={UnfoldMoreIcon} strokeWidth={2} className="ml-auto" />
+//         </SidebarMenuButton>
+//       </SidebarMenuItem>
+//     </SidebarMenu>
+//   )
+// }
+
+
+
 "use client"
 
-import * as React from "react"
-
-import {
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  useSidebar,
-} from "@/components/ui/sidebar"
-import { UnfoldMoreIcon } from "@hugeicons/core-free-icons"
-import { HugeiconsIcon } from "@hugeicons/react"
+import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar"
+import Link from "next/link"
 
 export function TeamSwitcher({
   teams,
@@ -20,28 +63,29 @@ export function TeamSwitcher({
     plan: string
   }[]
 }) {
-  const { isMobile } = useSidebar()
-  const [activeTeam, setActiveTeam] = React.useState(teams[0])
+  const activeTeam = teams[0]
 
-  if (!activeTeam) {
-    return null
-  }
+  if (!activeTeam) return null
 
   return (
     <SidebarMenu>
       <SidebarMenuItem>
-        <SidebarMenuButton
-          size="lg"
-          className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-        >
-          <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-            {activeTeam.logo}
-          </div>
-          <div className="grid flex-1 text-left text-sm leading-tight">
-            <span className="truncate font-medium">{activeTeam.name}</span>
-            <span className="truncate text-xs">{activeTeam.plan}</span>
-          </div>
-          <HugeiconsIcon icon={UnfoldMoreIcon} strokeWidth={2} className="ml-auto" />
+        <SidebarMenuButton asChild size="lg">
+          <Link href="/">
+            <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+              {activeTeam.logo}
+            </div>
+
+            <div className="grid flex-1 text-left text-sm leading-tight">
+              <span className="truncate font-medium">
+                {activeTeam.name}
+              </span>
+
+              <span className="truncate text-xs">
+                {activeTeam.plan}
+              </span>
+            </div>
+          </Link>
         </SidebarMenuButton>
       </SidebarMenuItem>
     </SidebarMenu>
