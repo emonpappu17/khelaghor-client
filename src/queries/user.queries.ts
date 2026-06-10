@@ -2,20 +2,26 @@ import "server-only"
 
 import { cache } from "react"
 
-import { apiFetch } from "@/lib/api"
+import { apiFetch, parseResponse } from "@/lib/api"
 
 import type { ApiResponse, User } from "@/types/api.types"
 
 export const getCurrentUser = cache(
     async (): Promise<ApiResponse<User> | null> => {
-        const response = await apiFetch<User>(
-            "/users/me"
-        )
+        // const response = await apiFetch<User>(
+        //     "/users/me"
+        // )
 
-        if (!response.success) {
+        // if (!response.success) {
+        //     return null
+        // }
+
+        const response = await apiFetch.get("/users/me")
+        const res = await parseResponse<User>(response)
+
+        if (!res.success) {
             return null
         }
-
-        return response
+        return res
     }
 )
