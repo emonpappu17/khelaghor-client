@@ -15,26 +15,26 @@ export const ROUTES = {
     RESET_PASSWORD: "/reset-password",
 
     // Shared dashboard
-    // DASHBOARD: "/dashboard",
-    PROFILE: "/dashboard/profile",
-    SETTINGS: "/dashboard/settings",
+    // DASHBOARD: "",
+    PROFILE: "/profile",
+    SETTINGS: "/settings",
 
     // User
-    USER_BOOKINGS: "/dashboard/user/bookings",
-    USER_NOTIFICATIONS: "/dashboard/user/notifications",
-    USER_BECOME_HOST: "/dashboard/user/become-host",
-    USER_REVIEWS: "/dashboard/user/reviews",
+    USER_BOOKINGS: "/user/bookings",
+    USER_NOTIFICATIONS: "/user/notifications",
+    USER_BECOME_HOST: "/user/become-host",
+    USER_REVIEWS: "/user/reviews",
 
     // Host
-    HOST_FIELDS: "/dashboard/host/field",
-    HOST_BOOKINGS: "/dashboard/host/bookings",
+    HOST_FIELDS: "/host/field",
+    HOST_BOOKINGS: "/host/bookings",
 
     // Admin
-    ADMIN_USERS: "/dashboard/admin/users",
-    ADMIN_HOSTS: "/dashboard/admin/hosts",
-    ADMIN_FIELDS: "/dashboard/admin/fields",
-    ADMIN_BOOKINGS: "/dashboard/admin/bookings",
-    ADMIN_REVIEWS: "/dashboard/admin/reviews",
+    ADMIN_USERS: "/admin/users",
+    ADMIN_HOSTS: "/admin/hosts",
+    ADMIN_FIELDS: "/admin/fields",
+    ADMIN_BOOKINGS: "/admin/bookings",
+    ADMIN_REVIEWS: "/admin/reviews",
 } as const;
 
 
@@ -61,25 +61,25 @@ type RoleGate = {
 export const ROLE_GATES: RoleGate[] = [
     //  ADMIN
     {
-        prefix: "/dashboard/admin",
+        prefix: "/admin",
         roles: ["ADMIN", "SUPER_ADMIN"],
     },
 
     //  HOST
     {
-        prefix: "/dashboard/host",
+        prefix: "/host",
         roles: ["HOST"],
     },
 
     //  USER ROUTES 
     {
-        prefix: "/dashboard/user",
+        prefix: "/user",
         roles: ["USER"],
     },
 
     //  COMMON DASHBOARD 
     // {
-    //     prefix: "/dashboard",
+    //     prefix: "",
     //     roles: ["USER", "HOST", "ADMIN", "SUPER_ADMIN"],
     // },
 ];
@@ -126,13 +126,13 @@ export function getDefaultDashboardRoute(
     switch (role) {
         case "SUPER_ADMIN":
         case "ADMIN":
-            return "/dashboard/admin";
+            return "/admin";
 
         case "HOST":
-            return "/dashboard/host";
+            return "/host";
 
         case "USER":
-            return "/dashboard/user";
+            return "/user";
 
         default:
             return "/";
@@ -140,7 +140,7 @@ export function getDefaultDashboardRoute(
 }
 
 // export const REDIRECT = {
-//     AFTER_LOGIN: "/dashboard",
+//     AFTER_LOGIN: "",
 //     AFTER_LOGOUT: "/login",
-//     UNAUTHORIZED: "/dashboard",
+//     UNAUTHORIZED: "",
 // } as const;

@@ -1,7 +1,7 @@
 "use server"
 
-import { zodErrors } from "@/actions/_helpers"
-import { apiFetch, mapApiErrors, parseResponse } from "@/lib/api"
+import { mapApiErrors, zodErrors } from "@/actions/_helpers"
+import { apiFetch, parseResponse } from "@/lib/api"
 import type { ActionState } from "@/types/api.types"
 import type { Field, CreateSlotsResult, Slot } from "@/types/field.types"
 import {
@@ -89,7 +89,7 @@ export async function createFieldAction(
         if (file && file.size > 0) apiFormData.append("files", file)
     })
     console.log(' apiFormData==>', apiFormData);
-    
+
     const response = await apiFetch.post("/fields", { body: apiFormData })
     const res = await parseResponse<Field>(response)
 

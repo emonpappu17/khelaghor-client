@@ -14,10 +14,10 @@ export const getCommonTopNavItems = (
 ): NavItem[] => {
     const overviewUrl =
         role === "ADMIN" || role === "SUPER_ADMIN"
-            ? "/dashboard/admin"
+            ? "/admin"
             : role === "HOST"
-                ? "/dashboard/host"
-                : "/dashboard/user";
+                ? "/host"
+                : "/user";
 
     return [
         {

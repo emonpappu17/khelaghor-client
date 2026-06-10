@@ -2,28 +2,8 @@ import { AppSidebar } from '@/components/layout/AppSidebar';
 import { Separator } from "@/components/ui/separator";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import React from 'react';
-// import HeaderActions from '@/components/layout/HeaderActions';
-// import { getCurrentUser } from '@/queries/user.queries';
-// import { apiFetch } from '@/lib/api';
 
-const DashboardLayout =  ({ children }: { children: React.ReactNode }) => {
-    // const userRes = await getCurrentUser();
-    // const user = userRes?.data ?? null;
-
-    // let unreadCount = 0;
-    // try {
-    //     const res = await apiFetch<{ count: number }>("/notifications/unread-count");
-    //     if (res?.success && typeof res.data?.count === "number") {
-    //         unreadCount = res.data.count;
-    //     }
-    // } catch {
-    //     // ignore — fallback to 0
-    // }
-
-    // const headerUser = user
-    //     ? { name: user.name, email: user.email, avatar: user.avatar ?? undefined }
-    //     : null
-
+const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
     return (
         <SidebarProvider>
             <AppSidebar />

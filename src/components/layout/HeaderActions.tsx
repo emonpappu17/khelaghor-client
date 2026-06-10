@@ -28,8 +28,8 @@ export default function HeaderActions({
   return (
     <div className="ml-auto flex items-center gap-3 px-4">
       <Link
-        href="/dashboard/user/notifications"
-        aria-current={pathname === "/dashboard/user/notifications" ? "page" : undefined}
+        href="/user/notifications"
+        aria-current={pathname === "/user/notifications" ? "page" : undefined}
         className="relative inline-flex h-9 w-9 items-center justify-center rounded-lg border border-white/5 bg-surface-container text-on-surface-variant hover:bg-muted"
         aria-label="Notifications"
       >
@@ -83,12 +83,12 @@ export default function HeaderActions({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <Link href="/dashboard/profile" className="flex w-full items-center">
+              <Link href="/profile" className="flex w-full items-center">
                 Profile
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem>
-              <Link href="/dashboard/settings" className="flex w-full items-center">
+              <Link href="/settings" className="flex w-full items-center">
                 Settings
               </Link>
             </DropdownMenuItem>
