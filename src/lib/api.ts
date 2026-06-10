@@ -5,6 +5,23 @@ import { cookies } from "next/headers"
 const BASE_URL =
   process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:5000/api/v1"
 
+interface FetchOptions extends Omit<RequestInit, "body"> {
+  body?:
+  | Record<string, unknown>
+  | FormData
+  | URLSearchParams
+  | BodyInit
+  | null
+
+  revalidate?: number | false
+  tags?: string[]
+}
+
+type NextFetchRequestConfig = {
+  revalidate?: number | false;
+  tags?: string[];
+};
+
 function buildHeaders(
   body: FetchOptions["body"],
   extraHeaders: HeadersInit | undefined,
@@ -33,76 +50,10 @@ function serializeBody(body: FetchOptions["body"]): BodyInit | null | undefined 
   return body as BodyInit
 }
 
-export async function forwardAuthCookies(response: Response): Promise<void> {
-  const store = await cookies()
-
-  // getSetCookie() returns each Set-Cookie value as a separate string
-  const setCookies: string[] =
-    typeof response.headers.getSetCookie === "function"
-      ? response.headers.getSetCookie()
-      : [response.headers.get("set-cookie") ?? ""].filter(Boolean)
-
-  for (const cookieStr of setCookies) {
-    const parts = cookieStr.split(";").map((p) => p.trim())
-    const [nameValue] = parts
-    const eqIdx = nameValue.indexOf("=")
-    if (eqIdx === -1) continue
-
-    const name = nameValue.slice(0, eqIdx)
-    const value = nameValue.slice(eqIdx + 1)
-
-    const opts: Parameters<typeof store.set>[2] = {}
-
-    for (const part of parts.slice(1)) {
-      const lower = part.toLowerCase()
-      if (lower === "httponly") opts.httpOnly = true
-      else if (lower === "secure") opts.secure = true
-      else if (lower.startsWith("samesite="))
-        opts.sameSite = part.split("=")[1].toLowerCase() as "strict" | "lax" | "none"
-      else if (lower.startsWith("max-age="))
-        opts.maxAge = parseInt(part.split("=")[1], 10)
-      else if (lower.startsWith("path=")) opts.path = part.split("=")[1]
-      else if (lower.startsWith("domain=")) opts.domain = part.split("=")[1]
-    }
-
-    store.set(name, value, opts)
-  }
-}
-
-export function mapApiErrors(
-  json: ApiResponse,
-  allowedFields: string[]
-): Record<string, string[]> {
-  const result: Record<string, string[]> = {}
-
-  for (const err of json.errors ?? []) {
-    const key = err.field && allowedFields.includes(err.field) ? err.field : "_form"
-    result[key] = [...(result[key] ?? []), err.message]
-  }
-
-  if (!Object.keys(result).length) {
-    result._form = [json.message ?? "An unexpected error occurred."]
-  }
-
-  return result
-}
-
 export async function parseResponse<T>(
   response: Response
 ): Promise<ApiResponse<T>> {
   return response.json()
-}
-
-interface FetchOptions extends Omit<RequestInit, "body"> {
-  body?:
-  | Record<string, unknown>
-  | FormData
-  | URLSearchParams
-  | BodyInit
-  | null
-
-  revalidate?: number | false
-  tags?: string[]
 }
 
 const serverFetchHelper = async (endpoint: string, options: FetchOptions = {}): Promise<Response> => {
@@ -172,9 +123,4 @@ export const apiFetch = {
       ...options,
     });
   },
-};
-
-type NextFetchRequestConfig = {
-  revalidate?: number | false;
-  tags?: string[];
 };
