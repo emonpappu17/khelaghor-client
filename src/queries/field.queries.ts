@@ -45,38 +45,146 @@
 // }
 
 
+// import "server-only"
+
+// import { apiFetch, parseResponse } from "@/lib/api"
+// import type { ApiResponse } from "@/types/api.types"
+// import type { Field, SlotsListData } from "@/types/field.types"
+
+// export async function getMyField(): Promise<ApiResponse<Field> | null> {
+//     console.log("CACHE CHECK", Date.now())
+//     const response = await apiFetch.get("/fields/my", {
+//         // tags: ["my-field"],
+//         // cache:"force-cache"
+//     })
+//     const res = await parseResponse<Field>(response)
+
+//     if (!res.success) return null
+//     return res
+// }
+
+// export async function getFieldSlots(fieldId: string): Promise<ApiResponse<SlotsListData> | null> {
+//     const response = await apiFetch.get(`/slots/${fieldId}`, {
+//         tags: ["field-slots", `field-slots-${fieldId}`],
+//         cache:"force-cache"
+
+//     })
+//     const res = await parseResponse<SlotsListData>(response)
+
+//     if (!res.success) return null
+//     return res
+// }
+
+// export async function getFieldById(fieldId: string): Promise<ApiResponse<Field> | null> {
+//     const response = await apiFetch.get(`/fields/${fieldId}`, {
+//         tags: ["fields", `field-${fieldId}`],
+//     })
+//     const res = await parseResponse<Field>(response)
+
+//     if (!res.success) return null
+//     return res
+// }
+
+
+
 import "server-only"
 
-import { apiFetch, parseResponse } from "@/lib/api"
-import type { ApiResponse } from "@/types/api.types"
-import type { Field, FieldsListData, SlotsListData } from "@/types/field.types"
+import {
+    cacheLife,
+    cacheTag,
+} from "next/cache"
 
-export async function getMyField(): Promise<ApiResponse<Field> | null> {
-    const response = await apiFetch.get("/fields/my", {
-        tags: ["my-field"],
+import {
+    apiFetch,
+    parseResponse,
+} from "@/lib/api"
+
+import type {
+    ApiResponse,
+} from "@/types/api.types"
+
+import type {
+    Field,
+    SlotsListData,
+} from "@/types/field.types"
+
+export async function getMyField(
+    accessToken: string
+): Promise<ApiResponse<Field> | null> {
+    "use cache"
+
+    cacheTag("my-field")
+
+    cacheLife({
+        stale: 60,
+        revalidate: 300,
+        expire: 3600,
     })
-    const res = await parseResponse<Field>(response)
 
-    if (!res.success) return null
-    return res
+    const response = await apiFetch.get(
+        "/fields/my",
+        { accessToken }
+    )
+
+    const res = await parseResponse<Field>(
+        response
+    )
+
+    return res.success
+        ? res
+        : null
 }
 
-export async function getFieldSlots(fieldId: string): Promise<ApiResponse<SlotsListData> | null> {
-    const response = await apiFetch.get(`/slots/${fieldId}`, {
-        tags: ["field-slots", `field-slots-${fieldId}`],
-    })
-    const res = await parseResponse<SlotsListData>(response)
+export async function getFieldSlots(
+    fieldId: string,
+    accessToken: string
+): Promise<
+    ApiResponse<SlotsListData>
+    | null
+> {
+    "use cache"
 
-    if (!res.success) return null
-    return res
+    cacheTag("field-slots", `field-slots-${fieldId}`)
+
+    cacheLife({
+        stale: 30,
+        revalidate: 60,
+        expire: 600,
+    })
+
+    const response = await apiFetch.get(
+        `/slots/${fieldId}`,
+        { accessToken }
+    )
+
+    const res =
+        await parseResponse<
+            SlotsListData
+        >(response)
+
+    return res.success ? res : null
 }
 
-export async function getFieldById(fieldId: string): Promise<ApiResponse<Field> | null> {
-    const response = await apiFetch.get(`/fields/${fieldId}`, {
-        tags: ["my-field", `field-${fieldId}`],
-    })
-    const res = await parseResponse<Field>(response)
+export async function getFieldById(
+    fieldId: string
+): Promise<ApiResponse<Field> | null> {
+    "use cache"
 
-    if (!res.success) return null
-    return res
+    cacheTag("fields", `field-${fieldId}`)
+
+    cacheLife({
+        stale: 300,
+        revalidate: 1800,
+        expire: 86400,
+    })
+
+    const response = await apiFetch.get(
+        `/fields/${fieldId}`
+    )
+
+    const res = await parseResponse<Field>(
+        response
+    )
+
+    return res.success ? res : null
 }

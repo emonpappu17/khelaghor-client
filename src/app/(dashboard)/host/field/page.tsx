@@ -1,9 +1,10 @@
-import type { Metadata } from "next"
-import { Suspense } from "react"
-import { getMyField, getFieldSlots } from "@/queries/field.queries"
 import { FieldSlotManager } from "@/components/modules/dashboard/host/field/FieldSlotManager"
 import { Skeleton } from "@/components/ui/skeleton"
+import { getAccessToken } from "@/lib/cookie"
+import { getFieldSlots, getMyField } from "@/queries/field.queries"
 import type { Slot } from "@/types/field.types"
+import type { Metadata } from "next"
+import { Suspense } from "react"
 
 export const metadata: Metadata = {
     title: "Field Management | Khelaghor Dashboard",
@@ -11,11 +12,19 @@ export const metadata: Metadata = {
 }
 
 async function FieldPageContent() {
-    const fieldsRes = await getMyField()
+    const token = await getAccessToken();
+
+    const fieldsRes =
+        await getMyField(
+            token
+        )
+    // const fieldsRes = await getMyField()
     const field = fieldsRes?.data ?? null
+
     let slots: Slot[] = []
+    
     if (field) {
-        const slotsRes = await getFieldSlots(field.id)
+        const slotsRes = await getFieldSlots(field.id, token)
         slots = slotsRes?.data ?? []
     }
 

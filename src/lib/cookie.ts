@@ -23,6 +23,10 @@ export const getCookie = async (key: string) => {
     return cookieStore.get(key)?.value || null
 }
 
+export const getAccessToken = async () => {
+    return await getCookie('accessToken') as string;
+}
+
 export const deleteCookie = async (key: string) => {
     const cookieStore = await cookies();
     cookieStore.delete(key)

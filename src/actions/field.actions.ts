@@ -2,15 +2,16 @@
 
 import { mapApiErrors, zodErrors } from "@/actions/_helpers"
 import { apiFetch, parseResponse } from "@/lib/api"
+import { getAccessToken } from "@/lib/cookie"
 import type { ActionState } from "@/types/api.types"
-import type { Field, CreateSlotsResult, Slot } from "@/types/field.types"
+import type { CreateSlotsResult, Field, Slot } from "@/types/field.types"
 import {
     createFieldSchema,
-    updateFieldSchema,
     createSlotsSchema,
+    updateFieldSchema,
     updateSlotSchema,
 } from "@/zod/field.schemas"
-import { revalidateTag } from "next/cache"
+import { updateTag } from "next/cache"
 
 // ─── Field Action Types ───────────────────────────────────
 export type CreateFieldState = ActionState<Field>
@@ -39,7 +40,7 @@ export async function createFieldAction(
         latitude: formData.get("latitude") as string,
         longitude: formData.get("longitude") as string,
     }
-    console.log('raw==>', raw);
+    // console.log('raw==>', raw);
     const parsed = createFieldSchema.safeParse(raw)
     if (!parsed.success) {
         return {
@@ -60,7 +61,7 @@ export async function createFieldAction(
         }
     }
 
-    console.log('parsed==>', parsed);
+    // console.log('parsed==>', parsed);
 
     const apiFormData = new FormData()
     apiFormData.set("name", parsed.data.name)
@@ -88,12 +89,12 @@ export async function createFieldAction(
     files.forEach((file) => {
         if (file && file.size > 0) apiFormData.append("files", file)
     })
-    console.log(' apiFormData==>', apiFormData);
-
-    const response = await apiFetch.post("/fields", { body: apiFormData })
+    // console.log(' apiFormData==>', apiFormData);
+    const accessToken = await getAccessToken();
+    const response = await apiFetch.post("/fields", { body: apiFormData, accessToken })
     const res = await parseResponse<Field>(response)
 
-    console.log('res==>', res);
+    // console.log('res==>', res);
 
     if (!res.success) {
         return {
@@ -118,7 +119,7 @@ export async function createFieldAction(
         }
     }
 
-    revalidateTag("my-field", "max")
+    updateTag("my-field")
     return { success: true, message: "Field created successfully!", data: res.data }
 }
 
@@ -166,7 +167,8 @@ export async function updateFieldAction(
         if (file && file.size > 0) apiFormData.append("files", file)
     })
 
-    const response = await apiFetch.patch(`/fields/${fieldId}`, { body: apiFormData })
+    const accessToken = await getAccessToken();
+    const response = await apiFetch.patch(`/fields/${fieldId}`, { body: apiFormData, accessToken })
     const res = await parseResponse<Field>(response)
 
     if (!res.success) {
@@ -179,19 +181,20 @@ export async function updateFieldAction(
         }
     }
 
-    revalidateTag("my-field", { expire: 0 })
+    updateTag("my-field")
     return { success: true, message: "Field updated successfully!", data: res.data }
 }
 
 export async function deleteFieldAction(fieldId: string): Promise<DeleteFieldState> {
-    const response = await apiFetch.delete(`/fields/${fieldId}`)
+    const accessToken = await getAccessToken();
+    const response = await apiFetch.delete(`/fields/${fieldId}`, { accessToken })
     const res = await parseResponse(response)
 
     if (!res.success) {
         return { errors: { _form: [res.message ?? "Failed to delete field."] } }
     }
 
-    revalidateTag("my-field", { expire: 0 })
+    updateTag("my-field")
     return { success: true, message: "Field deleted successfully!", data: { deleted: true } }
 }
 
@@ -226,8 +229,10 @@ export async function createSlotsAction(
         }
     }
 
+    const accessToken = await getAccessToken();
     const response = await apiFetch.post(`/slots/${fieldId}`, {
         body: parsed.data as unknown as Record<string, unknown>,
+        accessToken
     })
     const res = await parseResponse<CreateSlotsResult>(response)
 
@@ -248,7 +253,7 @@ export async function createSlotsAction(
         }
     }
 
-    revalidateTag("field-slots", { expire: 0 })
+    updateTag("field-slots")
     return { success: true, message: res.data?.message ?? "Slots created!", data: res.data }
 }
 
@@ -267,9 +272,11 @@ export async function updateSlotAction(
     if (!parsed.success) {
         return { errors: zodErrors(parsed.error) }
     }
+    const accessToken = await getAccessToken();
 
     const response = await apiFetch.patch(`/slots/${fieldId}/${slotId}`, {
         body: parsed.data as unknown as Record<string, unknown>,
+        accessToken
     })
     const res = await parseResponse<Slot>(response)
 
@@ -277,7 +284,7 @@ export async function updateSlotAction(
         return { errors: mapApiErrors(res, ["pricePerSlot", "status"]) }
     }
 
-    revalidateTag("field-slots", { expire: 0 })
+    updateTag("field-slots")
     return { success: true, message: "Slot updated successfully!", data: res.data }
 }
 
@@ -285,13 +292,14 @@ export async function deleteSlotAction(
     fieldId: string,
     slotId: string
 ): Promise<DeleteSlotState> {
-    const response = await apiFetch.delete(`/slots/${fieldId}/${slotId}`)
+    const accessToken = await getAccessToken();
+    const response = await apiFetch.delete(`/slots/${fieldId}/${slotId}`, { accessToken })
     const res = await parseResponse(response)
 
     if (!res.success) {
         return { errors: { _form: [res.message ?? "Failed to delete slot."] } }
     }
 
-    revalidateTag("field-slots", { expire: 0 })
+    updateTag("field-slots")
     return { success: true, message: "Slot deleted successfully!", data: { deleted: true } }
 }
