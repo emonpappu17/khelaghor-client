@@ -13,11 +13,8 @@ export const createFieldSchema = z.object({
     maxPlayers: z.coerce.number().int().positive("Max players must be a positive integer").optional(),
     facilities: z.string().optional(), // comma-separated, parsed in action
     division: z.string().min(2, "Division must be at least 2 characters"),
-    district: z.string().min(2, "District must be at least 2 characters"),
     address: z.string().min(4, "Address must be at least 4 characters"),
     area: z.string().min(2, "Area must be at least 2 characters"),
-    latitude: z.coerce.number({ message: "Latitude is required" }),
-    longitude: z.coerce.number({ message: "Longitude is required" }),
 })
 
 export const updateFieldSchema = createFieldSchema.partial()

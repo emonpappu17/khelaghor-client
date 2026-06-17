@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-"use server"
 
 import { UserRole } from "@/types/api.types";
 import jwt from "jsonwebtoken";
 import { ResponseCookie } from "next/dist/compiled/@edge-runtime/cookies";
 import { cookies } from "next/headers";
+import { cache } from "react";
 import setCookieParser from "set-cookie-parser"
 
 export type TJwtPayload = {
@@ -23,9 +23,9 @@ export const getCookie = async (key: string) => {
     return cookieStore.get(key)?.value || null
 }
 
-export const getAccessToken = async () => {
+export const getAccessToken = cache(async () => {
     return await getCookie('accessToken') as string;
-}
+})
 
 export const deleteCookie = async (key: string) => {
     const cookieStore = await cookies();

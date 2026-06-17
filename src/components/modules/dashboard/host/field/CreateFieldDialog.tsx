@@ -151,17 +151,17 @@ export function CreateFieldDialog() {
                                 <FieldError messages={state.errors?.division} />
                             </Field>
 
-                            <Field data-invalid={!!state.errors?.district || undefined}>
-                                <FieldLabel htmlFor="create-district">District</FieldLabel>
+                            <Field data-invalid={!!state.errors?.area || undefined}>
+                                <FieldLabel htmlFor="create-area">Area</FieldLabel>
                                 <Input
-                                    id="create-district"
-                                    name="district"
-                                    placeholder="Dhaka"
-                                    defaultValue={state.fields?.district}
-                                    aria-invalid={!!state.errors?.district || undefined}
+                                    id="create-area"
+                                    name="area"
+                                    placeholder="Mirpur"
+                                    defaultValue={state.fields?.area}
+                                    aria-invalid={!!state.errors?.area || undefined}
                                     required
                                 />
-                                <FieldError messages={state.errors?.district} />
+                                <FieldError messages={state.errors?.area} />
                             </Field>
                         </div>
 
@@ -177,51 +177,6 @@ export function CreateFieldDialog() {
                             />
                             <FieldError messages={state.errors?.address} />
                         </Field>
-
-                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                            <Field data-invalid={!!state.errors?.area || undefined}>
-                                <FieldLabel htmlFor="create-area">Area</FieldLabel>
-                                <Input
-                                    id="create-area"
-                                    name="area"
-                                    placeholder="Mirpur"
-                                    defaultValue={state.fields?.area}
-                                    aria-invalid={!!state.errors?.area || undefined}
-                                    required
-                                />
-                                <FieldError messages={state.errors?.area} />
-                            </Field>
-
-                            <Field data-invalid={!!state.errors?.latitude || undefined}>
-                                <FieldLabel htmlFor="create-latitude">Latitude</FieldLabel>
-                                <Input
-                                    id="create-latitude"
-                                    name="latitude"
-                                    type="number"
-                                    step="any"
-                                    placeholder="23.8103"
-                                    defaultValue={state.fields?.latitude}
-                                    aria-invalid={!!state.errors?.latitude || undefined}
-                                    required
-                                />
-                                <FieldError messages={state.errors?.latitude} />
-                            </Field>
-
-                            <Field data-invalid={!!state.errors?.longitude || undefined}>
-                                <FieldLabel htmlFor="create-longitude">Longitude</FieldLabel>
-                                <Input
-                                    id="create-longitude"
-                                    name="longitude"
-                                    type="number"
-                                    step="any"
-                                    placeholder="90.4125"
-                                    defaultValue={state.fields?.longitude}
-                                    aria-invalid={!!state.errors?.longitude || undefined}
-                                    required
-                                />
-                                <FieldError messages={state.errors?.longitude} />
-                            </Field>
-                        </div>
 
                         <Field>
                             <FieldLabel htmlFor="create-files">Images (optional, max 10)</FieldLabel>

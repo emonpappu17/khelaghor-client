@@ -34,13 +34,10 @@ export async function createFieldAction(
         maxPlayers: formData.get("maxPlayers") as string || undefined,
         facilities: formData.get("facilities") as string || undefined,
         division: formData.get("division") as string,
-        district: formData.get("district") as string,
         address: formData.get("address") as string,
         area: formData.get("area") as string,
-        latitude: formData.get("latitude") as string,
-        longitude: formData.get("longitude") as string,
     }
-    // console.log('raw==>', raw);
+    console.log('raw==>', raw);
     const parsed = createFieldSchema.safeParse(raw)
     if (!parsed.success) {
         return {
@@ -52,11 +49,8 @@ export async function createFieldAction(
                 maxPlayers: raw.maxPlayers ?? "",
                 facilities: raw.facilities ?? "",
                 division: raw.division ?? "",
-                district: raw.district ?? "",
                 address: raw.address ?? "",
                 area: raw.area ?? "",
-                latitude: raw.latitude ?? "",
-                longitude: raw.longitude ?? "",
             },
         }
     }
@@ -71,11 +65,8 @@ export async function createFieldAction(
         apiFormData.set("maxPlayers", String(parsed.data.maxPlayers))
     }
     apiFormData.set("division", parsed.data.division)
-    apiFormData.set("district", parsed.data.district)
     apiFormData.set("address", parsed.data.address)
     apiFormData.set("area", parsed.data.area)
-    apiFormData.set("latitude", String(parsed.data.latitude))
-    apiFormData.set("longitude", String(parsed.data.longitude))
 
     if (parsed.data.facilities) {
         parsed.data.facilities
@@ -100,8 +91,7 @@ export async function createFieldAction(
         return {
             errors: mapApiErrors(res, [
                 "name", "sportType", "description", "maxPlayers",
-                "facilities", "division", "district", "address",
-                "area", "latitude", "longitude",
+                "facilities", "division", "address", "area",
             ]),
             fields: {
                 name: raw.name ?? "",
@@ -110,11 +100,8 @@ export async function createFieldAction(
                 maxPlayers: raw.maxPlayers ?? "",
                 facilities: raw.facilities ?? "",
                 division: raw.division ?? "",
-                district: raw.district ?? "",
                 address: raw.address ?? "",
                 area: raw.area ?? "",
-                latitude: raw.latitude ?? "",
-                longitude: raw.longitude ?? "",
             },
         }
     }
@@ -135,11 +122,8 @@ export async function updateFieldAction(
         maxPlayers: formData.get("maxPlayers") as string || undefined,
         facilities: formData.get("facilities") as string || undefined,
         division: formData.get("division") as string || undefined,
-        district: formData.get("district") as string || undefined,
         address: formData.get("address") as string || undefined,
         area: formData.get("area") as string || undefined,
-        latitude: formData.get("latitude") as string || undefined,
-        longitude: formData.get("longitude") as string || undefined,
     }
 
     const parsed = updateFieldSchema.safeParse(raw)
@@ -175,8 +159,7 @@ export async function updateFieldAction(
         return {
             errors: mapApiErrors(res, [
                 "name", "sportType", "description", "maxPlayers",
-                "facilities", "division", "district", "address",
-                "area", "latitude", "longitude",
+                "facilities", "division", "address", "area",
             ]),
         }
     }

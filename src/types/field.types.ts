@@ -14,11 +14,8 @@ export type Field = {
     facilities: string[]
     images: string[]
     division: string
-    district: string
     address: string
     area: string
-    latitude: number
-    longitude: number
     status: FieldStatus
     averageRating: number
     totalReviews: number

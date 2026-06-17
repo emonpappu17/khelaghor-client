@@ -138,15 +138,15 @@ export function EditFieldDialog({ field, open, onOpenChange }: EditFieldDialogPr
                                 <FieldError messages={state.errors?.division} />
                             </Field>
 
-                            <Field data-invalid={!!state.errors?.district || undefined}>
-                                <FieldLabel htmlFor="edit-district">District</FieldLabel>
+                            <Field data-invalid={!!state.errors?.area || undefined}>
+                                <FieldLabel htmlFor="edit-area">Area</FieldLabel>
                                 <Input
-                                    id="edit-district"
-                                    name="district"
-                                    defaultValue={field.district}
-                                    aria-invalid={!!state.errors?.district || undefined}
+                                    id="edit-area"
+                                    name="area"
+                                    defaultValue={field.area}
+                                    aria-invalid={!!state.errors?.area || undefined}
                                 />
-                                <FieldError messages={state.errors?.district} />
+                                <FieldError messages={state.errors?.area} />
                             </Field>
                         </div>
 
@@ -160,45 +160,6 @@ export function EditFieldDialog({ field, open, onOpenChange }: EditFieldDialogPr
                             />
                             <FieldError messages={state.errors?.address} />
                         </Field>
-
-                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                            <Field data-invalid={!!state.errors?.area || undefined}>
-                                <FieldLabel htmlFor="edit-area">Area</FieldLabel>
-                                <Input
-                                    id="edit-area"
-                                    name="area"
-                                    defaultValue={field.area}
-                                    aria-invalid={!!state.errors?.area || undefined}
-                                />
-                                <FieldError messages={state.errors?.area} />
-                            </Field>
-
-                            <Field data-invalid={!!state.errors?.latitude || undefined}>
-                                <FieldLabel htmlFor="edit-latitude">Latitude</FieldLabel>
-                                <Input
-                                    id="edit-latitude"
-                                    name="latitude"
-                                    type="number"
-                                    step="any"
-                                    defaultValue={field.latitude}
-                                    aria-invalid={!!state.errors?.latitude || undefined}
-                                />
-                                <FieldError messages={state.errors?.latitude} />
-                            </Field>
-
-                            <Field data-invalid={!!state.errors?.longitude || undefined}>
-                                <FieldLabel htmlFor="edit-longitude">Longitude</FieldLabel>
-                                <Input
-                                    id="edit-longitude"
-                                    name="longitude"
-                                    type="number"
-                                    step="any"
-                                    defaultValue={field.longitude}
-                                    aria-invalid={!!state.errors?.longitude || undefined}
-                                />
-                                <FieldError messages={state.errors?.longitude} />
-                            </Field>
-                        </div>
 
                         <Field>
                             <FieldLabel htmlFor="edit-files">Replace Images (optional)</FieldLabel>
