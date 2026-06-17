@@ -230,9 +230,7 @@ export async function resetPasswordAction(
 
 export async function logoutAction(): Promise<void> {
     await apiFetch.post("/auth/logout")
-
-    deleteCookie("accessToken")
-    deleteCookie("refreshToken")
-
+    await deleteCookie("accessToken")
+    await deleteCookie("refreshToken")
     redirect("/login")
 }
