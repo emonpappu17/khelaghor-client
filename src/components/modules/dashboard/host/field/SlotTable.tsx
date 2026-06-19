@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useMemo } from "react"
+import { parse, format, addDays } from "date-fns"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -39,6 +40,11 @@ export function SlotTable({ slots, fieldId }: SlotTableProps) {
     const [editSlot, setEditSlot] = useState<Slot | null>(null)
     const [deleteSlot, setDeleteSlot] = useState<Slot | null>(null)
     const [statusFilter, setStatusFilter] = useState<"ALL" | "AVAILABLE" | "BOOKED" | "BLOCKED">("ALL")
+
+    const formatTime = (timeStr: string) => {
+        const parsed = parse(timeStr, "HH:mm", new Date())
+        return format(parsed, "h:mm aa").toLowerCase()
+    }
 
     // Group slots by date
     const slotsByDate = useMemo(() => {
@@ -95,11 +101,11 @@ export function SlotTable({ slots, fieldId }: SlotTableProps) {
         return daySlots.filter((s) => s.status === statusFilter)
     }, [activeDate, slotsByDate, statusFilter])
 
-    // Format date headers for selection tabs
+    const today = useMemo(() => new Date().toISOString().split("T")[0], [])
+    const tomorrow = useMemo(() => addDays(new Date(), 1).toISOString().split("T")[0], [])
+
     const formatDateTab = (dateStr: string) => {
         const dateObj = new Date(dateStr)
-        const today = new Date().toISOString().split("T")[0]
-        const tomorrow = new Date(Date.now() + 86400000).toISOString().split("T")[0]
 
         if (dateStr === today) return "Today"
         if (dateStr === tomorrow) return "Tomorrow"
@@ -228,8 +234,8 @@ export function SlotTable({ slots, fieldId }: SlotTableProps) {
                                         isSelected
                                             ? "bg-primary text-primary-foreground border-primary scale-[1.03] shadow-primary/10"
                                             : isFullyBooked
-                                            ? "bg-muted/40 text-muted-foreground/60 border-border/30 line-through"
-                                            : "bg-card hover:bg-muted/40 border-border hover:border-border-hover"
+                                                ? "bg-muted/40 text-muted-foreground/60 border-border/30 line-through"
+                                                : "bg-card hover:bg-muted/40 border-border hover:border-border-hover"
                                     )}
                                 >
                                     <span>{formatDateTab(dateStr)}</span>
@@ -299,7 +305,7 @@ export function SlotTable({ slots, fieldId }: SlotTableProps) {
                                             {/* Time block */}
                                             <div className="flex items-center gap-2">
                                                 <span className="text-base font-bold text-foreground">
-                                                    {slot.startTime} – {slot.endTime}
+                                                    {formatTime(slot.startTime)} – {formatTime(slot.endTime)}
                                                 </span>
                                             </div>
 
@@ -364,7 +370,7 @@ export function SlotTable({ slots, fieldId }: SlotTableProps) {
                 <DeleteSlotDialog
                     fieldId={fieldId}
                     slotId={deleteSlot.id}
-                    slotLabel={`${deleteSlot.startTime}–${deleteSlot.endTime} on ${new Date(
+                    slotLabel={`${formatTime(deleteSlot.startTime)}–${formatTime(deleteSlot.endTime)} on ${new Date(
                         deleteSlot.date
                     ).toLocaleDateString()}`}
                     open={!!deleteSlot}

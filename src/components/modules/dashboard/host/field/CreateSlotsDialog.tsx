@@ -22,11 +22,20 @@ export function CreateSlotsDialog({ fieldId, fieldName }: CreateSlotsDialogProps
     const initialState: CreateSlotsState = {}
     const [state, formAction, pending] = useActionState(boundAction, initialState)
     const formRef = useRef<HTMLFormElement>(null)
+    const [prevState, setPrevState] = useState(state)
+
+    // Reset dialog state during render, not in an effect
+    if (state !== prevState) {
+        setPrevState(state)
+        if (state.success) {
+            setOpen(false)
+        }
+    }
 
     useEffect(() => {
         if (state.success) {
             toast.success(state.message ?? "Slots created!")
-            setOpen(false)
+            // setOpen(false)
             formRef.current?.reset()
         }
     }, [state])

@@ -16,7 +16,7 @@ export function FieldSlotManager({ field, slots }: FieldSlotManagerProps) {
     if (!field) {
         return (
             <div className="space-y-6 animate-in fade-in duration-300">
-                <div className="bg-gradient-to-r from-primary/10 to-secondary/10 p-5 rounded-2xl border border-primary/20 max-w-4xl">
+                <div className="bg-linear-to-r from-primary/10 to-secondary/10 p-5 rounded-2xl border border-primary/20 max-w-4xl">
                     <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
                         Welcome to Khelaghor Hosting
                     </h2>

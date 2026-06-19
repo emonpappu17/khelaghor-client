@@ -178,6 +178,11 @@ export async function deleteFieldAction(fieldId: string): Promise<DeleteFieldSta
     }
 
     updateTag("my-field")
+    // updateTag(`field-slots-${fieldId}`)
+    // updateTag("field-slots")
+    // updateTag("fields")
+    // updateTag(`field-${fieldId}`)
+
     return { success: true, message: "Field deleted successfully!", data: { deleted: true } }
 }
 
@@ -196,6 +201,8 @@ export async function createSlotsAction(
         slotDurationMinutes: formData.get("slotDurationMinutes") as string,
         pricePerSlot: formData.get("pricePerSlot") as string,
     }
+
+    console.log('raw==>', raw);
 
     const parsed = createSlotsSchema.safeParse(raw)
     if (!parsed.success) {

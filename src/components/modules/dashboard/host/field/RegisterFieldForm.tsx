@@ -36,7 +36,19 @@ const initialState: CreateFieldState = {}
 export function RegisterFieldForm() {
     const [state, formAction, pending] = useActionState(createFieldAction, initialState)
     const formRef = useRef<HTMLFormElement>(null)
+    // const [previewImages, setPreviewImages] = useState<string[]>([])
     const [previewImages, setPreviewImages] = useState<string[]>([])
+    const [prevState, setPrevState] = useState(state)          // ← track previous state
+
+    // During render: if state changed and it's a success, reset previews immediately.
+    // This is the React-recommended pattern for derived state resets.
+    if (state !== prevState) {
+        setPrevState(state)
+        if (state.success) {
+            setPreviewImages([])
+        }
+    }
+
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files
@@ -51,7 +63,7 @@ export function RegisterFieldForm() {
         if (state.success) {
             toast.success(state.message ?? "Field created successfully!")
             formRef.current?.reset()
-            setPreviewImages([])
+            // setPreviewImages([])
         } else if (state.errors?._form) {
             toast.error(state.errors._form.join(", "))
         }
