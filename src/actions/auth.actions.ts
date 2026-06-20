@@ -94,7 +94,7 @@ export async function loginAction(
 
     // apiFetch.post returns raw Response — we need it raw to forward Set-Cookie headers
     const response = await apiFetch.post("/auth/login", { body: parsed.data })
-
+    // console.log('response==>', response);
     const json: { success: boolean; message: string; data?: LoginData } =
         await response.json().catch(() => ({
             success: false,
