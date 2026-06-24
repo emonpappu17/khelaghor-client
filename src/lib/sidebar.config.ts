@@ -52,11 +52,11 @@ export const userNavItems: NavItem[] = [
         url: ROUTES.USER_NOTIFICATIONS,
         icon: "notifications",
     },
-    {
-        title: "Become a Host",
-        url: ROUTES.USER_BECOME_HOST,
-        icon: "becomeHost",
-    },
+    // {
+    //     title: "Become a Host",
+    //     url: ROUTES.USER_BECOME_HOST,
+    //     icon: "becomeHost",
+    // },
     {
         title: "Reviews",
         url: ROUTES.USER_REVIEWS,

@@ -48,10 +48,12 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
     }, [state.errors])
 
     const f = state.fields
+    const redirectTo = searchParams.get("redirectTo") || searchParams.get("callbackUrl") || ""
 
     return (
         <div className={cn("flex flex-col gap-5", className)} {...props}>
             <form action={action} noValidate>
+                <input type="hidden" name="redirectTo" value={redirectTo} />
                 <FieldGroup>
                     {/* ── Header ── */}
                     <div className="flex flex-col gap-1 text-center">

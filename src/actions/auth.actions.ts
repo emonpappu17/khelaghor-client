@@ -109,8 +109,13 @@ export async function loginAction(
     }
 
     await forwardAuthCookies(response)
-    const route = getDefaultDashboardRoute(json.data?.user.role as UserRole)
-    redirect(route)
+    const redirectTo = formData.get("redirectTo") as string
+    if (redirectTo && redirectTo.startsWith("/")) {
+        redirect(redirectTo)
+    } else {
+        const route = getDefaultDashboardRoute(json.data?.user.role as UserRole)
+        redirect(route)
+    }
 }
 
 export async function sendVerificationOtpAction(

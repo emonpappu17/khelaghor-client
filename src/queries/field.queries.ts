@@ -48,7 +48,7 @@ export async function getMyField(
 
 export async function getFieldSlots(
     fieldId: string,
-    accessToken: string
+    accessToken?: string
 ): Promise<
     ApiResponse<SlotsListData>
     | null
@@ -65,7 +65,7 @@ export async function getFieldSlots(
 
     const response = await apiFetch.get(
         `/slots/${fieldId}`,
-        { accessToken }
+        accessToken ? { accessToken } : undefined
     )
 
     const res =
@@ -96,6 +96,50 @@ export async function getFieldById(
     const res = await parseResponse<Field>(
         response
     )
+
+    return res.success ? res : null
+}
+
+export async function getFields(
+    filters: {
+        sportType?: string
+        division?: string
+        status?: string
+        searchTerm?: string
+    },
+    options?: {
+        limit?: number
+        page?: number
+        sortBy?: string
+        sortOrder?: string
+    }
+): Promise<ApiResponse<Field[]> | null> {
+    "use cache"
+
+    cacheTag("fields-list")
+
+    cacheLife({
+        stale: 60,
+        revalidate: 300,
+        expire: 3600,
+    })
+
+    const queryParams = new URLSearchParams()
+    if (filters.sportType) queryParams.set("sportType", filters.sportType)
+    if (filters.division) queryParams.set("division", filters.division)
+    if (filters.status) queryParams.set("status", filters.status)
+    if (filters.searchTerm) queryParams.set("searchTerm", filters.searchTerm)
+
+    if (options?.limit) queryParams.set("limit", String(options.limit))
+    if (options?.page) queryParams.set("page", String(options.page))
+    if (options?.sortBy) queryParams.set("sortBy", options.sortBy)
+    if (options?.sortOrder) queryParams.set("sortOrder", options.sortOrder)
+
+    const queryString = queryParams.toString()
+    const url = `/fields${queryString ? `?${queryString}` : ""}`
+
+    const response = await apiFetch.get(url)
+    const res = await parseResponse<Field[]>(response)
 
     return res.success ? res : null
 }

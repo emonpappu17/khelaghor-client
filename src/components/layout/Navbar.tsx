@@ -4,15 +4,17 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { MenuIcon, XIcon } from "lucide-react";
+import type { AuthUser } from "@/types/api.types";
+import HeaderActions from "./HeaderActions";
 
-export default function Navbar() {
+export default function Navbar({ user }: { user: AuthUser | null }) {
     const [isOpen, setIsOpen] = useState(false);
     const pathname = usePathname();
 
     const navLinks = [
         { name: "Home", href: "/" },
         { name: "Fields", href: "/fields" },
-        { name: "About Us", href: "#about" },
+        { name: "About Us", href: "/about" },
     ];
 
     const isActive = (href: string) => {
@@ -48,13 +50,16 @@ export default function Navbar() {
                         </Link>
                     ))}
 
-                    <Link
-                        href="/register"
-                        aria-current={pathname === "/register" ? "page" : undefined}
-                        className="rounded-lg px-6 py-3 text-sm font-black uppercase tracking-wide transition-all active:scale-95 bg-primary-container text-on-primary-container hover:brightness-110"
-                    >
-                        Become Host
-                    </Link>
+                    {(!user || user.role === "USER") && (
+                        <Link
+                            href={user ? "/user/become-host" : "/register"}
+                            className="rounded-lg px-6 py-3 text-sm font-black uppercase tracking-wide transition-all active:scale-95 bg-primary-container text-on-primary-container hover:brightness-110"
+                        >
+                            Become Host
+                        </Link>
+                    )}
+
+                    <HeaderActions user={user} />
                 </nav>
 
                 {/* Mobile Toggle — outside <nav> since it controls visibility, not navigation itself */}
@@ -84,7 +89,7 @@ export default function Navbar() {
                 className={`${isOpen ? "block" : "hidden"
                     } border-t border-white/5 bg-surface-container-low/95 backdrop-blur-xl md:hidden`}
             >
-                <ul className="space-y-2 px-6 py-6">
+                <ul className="space-y-4 px-6 py-6">
                     {navLinks.map((item) => (
                         <li key={item.name}>
                             <Link
@@ -100,15 +105,19 @@ export default function Navbar() {
                             </Link>
                         </li>
                     ))}
-                    <li>
-                        <Link
-                            href="/register"
-                            onClick={() => setIsOpen(false)}
-                            aria-current={pathname === "/register" ? "page" : undefined}
-                            className="mt-2 block rounded-lg px-4 py-4 text-center text-sm font-black uppercase tracking-wide transition bg-primary-container text-on-primary-container hover:brightness-110"
-                        >
-                            Become Host
-                        </Link>
+                    {(!user || user.role === "USER") && (
+                        <li>
+                            <Link
+                                href={user ? "/user/become-host" : "/register"}
+                                onClick={() => setIsOpen(false)}
+                                className="mt-2 block rounded-lg px-4 py-4 text-center text-sm font-black uppercase tracking-wide transition bg-primary-container text-on-primary-container hover:brightness-110"
+                            >
+                                Become Host
+                            </Link>
+                        </li>
+                    )}
+                    <li className="pt-4 border-t border-white/5 flex justify-center">
+                        <HeaderActions user={user} />
                     </li>
                 </ul>
             </nav>
