@@ -4,6 +4,7 @@
 import { apiFetch, parseResponse } from "@/lib/api"
 import { getAccessToken } from "@/lib/cookie"
 import type { ActionState } from "@/types/api.types"
+import { updateTag } from "next/cache"
 
 export type BookingResult = {
     booking: {
@@ -67,6 +68,12 @@ export async function createBookingAction(
             }
         }
 
+        // Trigger cache invalidation
+        updateTag("bookings")
+        updateTag("bookings-user")
+        updateTag("bookings-host")
+        updateTag("field-slots")
+
         return {
             success: true,
             message: res.message || "Booking created successfully!",
@@ -78,3 +85,48 @@ export async function createBookingAction(
         }
     }
 }
+
+export type CancelBookingState = ActionState<undefined>
+
+export async function cancelBookingAction(
+    bookingId: string,
+    reason?: string
+): Promise<CancelBookingState> {
+    const accessToken = await getAccessToken()
+    if (!accessToken) {
+        return {
+            errors: { _form: ["You must be logged in to cancel a booking."] }
+        }
+    }
+
+    try {
+        const response = await apiFetch.post(`/bookings/${bookingId}/cancel`, {
+            body: reason ? { reason } : {},
+            accessToken
+        })
+
+        const res = await parseResponse<any>(response)
+
+        if (!res.success) {
+            return {
+                errors: { _form: [res.message || "Failed to cancel booking."] }
+            }
+        }
+
+        // Trigger cache invalidation
+        updateTag("bookings")
+        updateTag("bookings-user")
+        updateTag("bookings-host")
+        updateTag("field-slots")
+
+        return {
+            success: true,
+            message: res.message || "Booking cancelled successfully!"
+        }
+    } catch (err: any) {
+        return {
+            errors: { _form: [err?.message || "An unexpected error occurred."] }
+        }
+    }
+}
+

@@ -1,11 +1,24 @@
+import { HostBookingsPageContent } from "@/components/modules/dashboard/host/bookings/HostBookingsPageContent"
+import { HostBookingsSkeleton } from "@/components/modules/dashboard/host/bookings/HostBookingsSkeleton"
+// import { HostBookingsSkeleton } from "@/components/modules/dashboard/host/bookings/HostBookingsSkeleton"
 import type { Metadata } from "next"
+import { Suspense } from "react"
 
 export const metadata: Metadata = {
     title: "Host Bookings | Khelaghor Dashboard",
     description: "View and manage bookings for your sports fields on Khelaghor.",
 }
 
-export default function HostBookingsPage() {
+type Props = {
+    searchParams: Promise<{
+        page?: string
+        status?: string
+        q?: string
+    }>
+}
+
+
+export default async function HostBookingsPage({ searchParams }: Props) {
     return (
         <div className="space-y-6">
             <div>
@@ -16,6 +29,11 @@ export default function HostBookingsPage() {
                     View all bookings for your fields — upcoming, confirmed, and completed.
                 </p>
             </div>
+
+            <Suspense fallback={<HostBookingsSkeleton />}>
+                <HostBookingsPageContent searchParams={searchParams} />
+            </Suspense>
         </div>
     )
 }
+

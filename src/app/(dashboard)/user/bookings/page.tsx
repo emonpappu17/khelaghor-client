@@ -1,11 +1,24 @@
+import { UserBookingsPageContent } from "@/components/modules/dashboard/user/bookings/UserBookingsPageContent"
+import { UserBookingsSkeleton } from "@/components/modules/dashboard/user/bookings/UserBookingsSkeleton"
+// import { UserBookingsSkeleton } from "@/components/modules/dashboard/user/bookings/UserBookingsSkeleton"
 import type { Metadata } from "next"
+import { Suspense } from "react"
 
 export const metadata: Metadata = {
     title: "My Bookings | Khelaghor Dashboard",
     description: "View and manage your sports field bookings on Khelaghor.",
 }
 
-export default function BookingsPage() {
+type Props = {
+    searchParams: Promise<{
+        page?: string
+        status?: string
+        q?: string
+    }>
+}
+
+
+export default async function BookingsPage({ searchParams }: Props) {
     return (
         <div className="space-y-6">
             <div>
@@ -16,6 +29,11 @@ export default function BookingsPage() {
                     Track your upcoming, active, and past bookings.
                 </p>
             </div>
+
+            <Suspense fallback={<UserBookingsSkeleton />}>
+                <UserBookingsPageContent searchParams={searchParams} />
+            </Suspense>
         </div>
     )
 }
+
