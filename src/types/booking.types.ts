@@ -36,6 +36,17 @@ export interface BookingSlot {
         district: string
         area: string
         images?: string[]
+        host?: {
+            id: string
+            businessName: string | null
+            user: {
+                id: string
+                name: string
+                email: string
+                phone: string | null
+                avatar?: string | null
+            }
+        }
     }
 }
 
