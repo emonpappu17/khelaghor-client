@@ -11,7 +11,7 @@ import {
 } from "@/lib/api"
 
 import type { ApiResponse } from "@/types/api.types"
-import type { Booking, BookingsResponseData } from "@/types/booking.types"
+import type { Booking } from "@/types/booking.types"
 
 /**
  * Fetch the authenticated user's own bookings.
