@@ -21,7 +21,7 @@ export async function proxy(request: NextRequest) {
     }
 
     const accessToken = await getCookie("accessToken");
-
+    console.log('accessToken==>', accessToken);
     const user = accessToken
         ? await verifyTokenUser()
         : null;
