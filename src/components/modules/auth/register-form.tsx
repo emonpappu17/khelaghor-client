@@ -300,7 +300,7 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<"div"
                             type="button"
                             className="w-full"
                             onClick={() => {
-                                window.location.href = `${process.env.NEXT_PUBLIC_BASE_URL}/auth/google?redirect=/dashboard`
+                                window.location.href = `${process.env.NEXT_PUBLIC_BASE_URL}/auth/google`
                             }}
                         >
                             <svg
