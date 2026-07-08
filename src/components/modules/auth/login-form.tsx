@@ -19,7 +19,7 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
-import { useActionState, useEffect, useRef, useState } from "react"
+import { useActionState, useEffect, useRef, useState, useTransition } from "react"
 import { SubmitButton } from "./SubmitButton"
 
 
@@ -29,6 +29,8 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
     const [showPassword, setShowPassword] = useState(false)
     const passwordRef = useRef<HTMLInputElement>(null)
     const searchParams = useSearchParams()
+
+    const [isPending, startTransition] = useTransition();
 
     // Was the user just redirected here after successful registration?
     const justRegistered = searchParams.get("registered") === "true"
@@ -188,9 +190,27 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                             type="button"
                             className="w-full"
                             onClick={() => {
-                                window.location.href = `${process.env.NEXT_PUBLIC_BASE_URL}/auth/google`
+                                const url = new URL(`${process.env.NEXT_PUBLIC_BASE_URL}/auth/google`)
+                                if (redirectTo) url.searchParams.set("redirect", redirectTo)
+                                window.location.href = url.toString()
                             }}
+                        // onClick={() => {
+                        //     window.location.href = `${process.env.NEXT_PUBLIC_BASE_URL}/auth/google`
+                        // }}
+
                         >
+                            {/* <Button
+                            variant="outline"
+                            type="button"
+                            disabled={isPending}
+                            className="w-full"
+                            onClick={() => {
+                                startTransition(async () => {
+                                    await googleAction(redirectTo);
+                                });
+                            }}
+                        > */}
+
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 24 24"
@@ -229,6 +249,6 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                     </Field>
                 </FieldGroup>
             </form>
-        </div>
+        </div >
     )
 }

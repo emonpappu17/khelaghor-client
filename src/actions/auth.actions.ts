@@ -118,6 +118,97 @@ export async function loginAction(
     }
 }
 
+// export async function googleAction(
+//     redirectTo: string
+// ): Promise<LoginState> {
+//     // const raw = {
+//     //     email: formData.get("email") as string,
+//     //     password: formData.get("password") as string,
+//     // }
+
+//     // const parsed = loginSchema.safeParse(raw)
+//     // if (!parsed.success) {
+//     //     return {
+//     //         errors: zodErrors(parsed.error),
+//     //         fields: { email: raw.email ?? "" },
+//     //     }
+//     // }
+
+//     // // apiFetch.post returns raw Response — we need it raw to forward Set-Cookie headers
+//     // const response = await apiFetch.post("/auth/login", { body: parsed.data })
+//     // // console.log('response==>', response);
+//     // const json: { success: boolean; message: string; data?: LoginData } =
+//     //     await response.json().catch(() => ({
+//     //         success: false,
+//     //         message: "Failed to parse server response.",
+//     //     }))
+
+//     // if (!response.ok || !json.success) {
+//     //     return {
+//     //         errors: { _form: [json.message ?? "Invalid email or password."] },
+//     //         fields: { email: raw.email ?? "" },
+//     //     }
+//     // }
+
+//     // await forwardAuthCookies(response)
+//     // const redirectTo = formData.get("redirectTo") as string
+//     // if (redirectTo && redirectTo.startsWith("/")) {
+//     //     redirect(redirectTo)
+//     // } else {
+//     //     const route = getDefaultDashboardRoute(json.data?.user.role as UserRole)
+//     //     redirect(route)
+//     // }
+
+
+//     const response = await apiFetch.get("/auth/google")
+
+//     const json: { success: boolean; message: string; data?: { role: string } } =
+//         await response.json().catch(() => ({
+//             success: false,
+//             message: "Failed to parse server response.",
+//         }))
+
+//     if (!response.ok || !json.success) {
+//         redirect(`/login?error=GoogleAuthFailed`)
+//     }
+
+//     console.log('json===>', json);
+//     await forwardAuthCookies(response)
+
+//     if (redirectTo && redirectTo.startsWith("/")) {
+//         redirect(redirectTo)
+//     } else {
+//         const route = getDefaultDashboardRoute(json.data?.role as UserRole)
+//         redirect(route)
+//     }
+// }
+
+// export async function googleLoginAction(code: string, redirectTo?: string) {
+//     const response = await apiFetch.post("/auth/google/exchange", {
+//         body: { code },
+//     })
+
+//     const json: { success: boolean; message: string; data?: LoginData } =
+//         await response.json().catch(() => ({
+//             success: false,
+//             message: "Failed to parse server response.",
+//         }))
+
+//     if (!response.ok || !json.success) {
+//         redirect(`/login?error=GoogleAuthFailed`)
+//     }
+
+//     console.log('json ==>', json);
+//     await forwardAuthCookies(response)
+
+//     if (redirectTo && redirectTo.startsWith("/")) {
+//         redirect(redirectTo)
+//     } else {
+//         const route = getDefaultDashboardRoute(json.data?.user.role as UserRole)
+//         redirect(route)
+//     }
+// }
+
 export async function sendVerificationOtpAction(
     email: string
 ): Promise<SendOtpState> {
