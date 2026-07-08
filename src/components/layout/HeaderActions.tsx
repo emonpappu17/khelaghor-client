@@ -379,7 +379,7 @@ export default function HeaderActions({
 
           {/* Dashboard - show for all authenticated users */}
           <DropdownMenuItem asChild>
-            <Link href="/dashboard" className="flex items-center gap-2 cursor-pointer">
+            <Link href={`/${user?.role?.toLowerCase() === 'super_admin' ? 'admin' : `${user?.role?.toLowerCase()}`}`} className="flex items-center gap-2 cursor-pointer">
               <HugeiconsIcon icon={DashboardSquare01Icon} strokeWidth={2} className="size-4" />
               Dashboard
             </Link>

@@ -19,7 +19,7 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
-import { useActionState, useEffect, useRef, useState, useTransition } from "react"
+import { useActionState, useEffect, useRef, useState } from "react"
 import { SubmitButton } from "./SubmitButton"
 
 
@@ -29,8 +29,6 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
     const [showPassword, setShowPassword] = useState(false)
     const passwordRef = useRef<HTMLInputElement>(null)
     const searchParams = useSearchParams()
-
-    const [isPending, startTransition] = useTransition();
 
     // Was the user just redirected here after successful registration?
     const justRegistered = searchParams.get("registered") === "true"
