@@ -282,8 +282,7 @@ export default function Navbar({ user }: { user: AuthUser | null }) {
         return pathname === href;
     };
 
-    // Determine if user can become a host
-    const canBecomeHost = !user || user.role === "USER";
+    const isLoggedOut = !user;
 
     return (
         <header className="sticky inset-x-0 top-0 z-50 border-b border-white/5 bg-background/20 backdrop-blur-2xl">
@@ -316,15 +315,15 @@ export default function Navbar({ user }: { user: AuthUser | null }) {
 
                 {/* Desktop Right Section */}
                 <div className="hidden lg:flex items-center gap-4">
-                    {canBecomeHost && (
+                    {isLoggedOut && (
                         <Link
-                            href={user ? "/user/become-host" : "/register"}
+                            href="/register"
                             className="rounded-lg px-5 py-2.5 text-sm font-black uppercase tracking-wide transition-all active:scale-95 bg-primary-container text-on-primary-container hover:brightness-110"
                         >
                             Get Started
                         </Link>
                     )}
-                    <HeaderActions user={user} />
+                    {user && <HeaderActions user={user} />}
                 </div>
 
                 {/* Mobile Toggle */}
@@ -367,9 +366,9 @@ export default function Navbar({ user }: { user: AuthUser | null }) {
                         </Link>
                     ))}
 
-                    {canBecomeHost && (
+                    {isLoggedOut && (
                         <Link
-                            href={user ? "/user/become-host" : "/register"}
+                            href="/register"
                             onClick={() => setIsOpen(false)}
                             className="mt-2 block rounded-lg px-4 py-3 text-center text-sm font-black uppercase tracking-wide transition-all bg-primary-container text-on-primary-container hover:brightness-110"
                         >
@@ -377,9 +376,11 @@ export default function Navbar({ user }: { user: AuthUser | null }) {
                         </Link>
                     )}
 
-                    <div className="pt-4 mt-4 border-t border-white/5">
-                        <HeaderActions user={user} />
-                    </div>
+                    {user && (
+                        <div className="pt-4 mt-4 border-t border-white/5">
+                            <HeaderActions user={user} />
+                        </div>
+                    )}
                 </nav>
             </div>
         </header>
