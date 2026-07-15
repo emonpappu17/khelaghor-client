@@ -57,7 +57,7 @@ export default function Navbar({ user }: { user: AuthUser | null }) {
                 <div className="hidden lg:flex items-center gap-4">
                     {isLoggedOut && (
                         <Link
-                            href="/register"
+                            href="/login"
                             className="rounded-lg px-5 py-2.5 text-sm font-black uppercase tracking-wide transition-all active:scale-95 bg-primary-container text-on-primary-container hover:brightness-110"
                         >
                             Get Started
@@ -108,7 +108,7 @@ export default function Navbar({ user }: { user: AuthUser | null }) {
 
                     {isLoggedOut && (
                         <Link
-                            href="/register"
+                            href="/login"
                             onClick={() => setIsOpen(false)}
                             className="mt-2 block rounded-lg px-4 py-3 text-center text-sm font-black uppercase tracking-wide transition-all bg-primary-container text-on-primary-container hover:brightness-110"
                         >
