@@ -22,12 +22,22 @@ import { useSearchParams } from "next/navigation"
 import { useActionState, useEffect, useRef, useState } from "react"
 import { SubmitButton } from "./SubmitButton"
 
-
 const initialState: LoginState = {}
+
+// ── Demo accounts ──
+const DEMO_ACCOUNTS = {
+    USER: { email: "hasan.mahmud@gmail.com", password: "asdfasdf" },
+    HOST: { email: "rahim.ahmed@gmail.com", password: "asdfasdf" },
+    ADMIN: { email: "super@gmail.com", password: "asdfasdf" },
+} as const
+
+type DemoRole = keyof typeof DEMO_ACCOUNTS
 
 export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
     const [showPassword, setShowPassword] = useState(false)
     const passwordRef = useRef<HTMLInputElement>(null)
+    const emailRef = useRef<HTMLInputElement>(null)
+    const formRef = useRef<HTMLFormElement>(null)
     const searchParams = useSearchParams()
 
     // Was the user just redirected here after successful registration?
@@ -50,9 +60,17 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
     const f = state.fields
     const redirectTo = searchParams.get("redirectTo") || searchParams.get("callbackUrl") || ""
 
+    // Fills the email/password inputs with a demo account and submits the form
+    const handleDemoLogin = (role: DemoRole) => {
+        const { email, password } = DEMO_ACCOUNTS[role]
+        if (emailRef.current) emailRef.current.value = email
+        if (passwordRef.current) passwordRef.current.value = password
+        formRef.current?.requestSubmit()
+    }
+
     return (
         <div className={cn("flex flex-col gap-5", className)} {...props}>
-            <form action={action} noValidate>
+            <form ref={formRef} action={action} noValidate>
                 <input type="hidden" name="redirectTo" value={redirectTo} />
                 <FieldGroup>
                     {/* ── Header ── */}
@@ -105,6 +123,42 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                         </div>
                     )}
 
+                    {/* ── Demo account quick-login ── */}
+                    <div className="flex flex-col gap-2 rounded-lg border border-white/10 bg-white/5 p-3">
+                        <p className="text-center text-[11px] font-medium uppercase tracking-widest text-on-surface-variant">
+                            Quick demo login
+                        </p>
+                        <div className="flex gap-2">
+                            <Button
+                                type="button"
+                                variant="secondary"
+                                size="sm"
+                                className="flex-1"
+                                onClick={() => handleDemoLogin("USER")}
+                            >
+                                Demo Player
+                            </Button>
+                            <Button
+                                type="button"
+                                variant="secondary"
+                                size="sm"
+                                className="flex-1"
+                                onClick={() => handleDemoLogin("HOST")}
+                            >
+                                Demo Host
+                            </Button>
+                            <Button
+                                type="button"
+                                variant="secondary"
+                                size="sm"
+                                className="flex-1"
+                                onClick={() => handleDemoLogin("ADMIN")}
+                            >
+                                Demo Admin
+                            </Button>
+                        </div>
+                    </div>
+
                     {/* ── Email ── */}
                     <Field>
                         <FieldLabel htmlFor="email">Email</FieldLabel>
@@ -112,6 +166,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                             id="email"
                             name="email"
                             type="email"
+                            ref={emailRef}
                             placeholder="you@example.com"
                             autoComplete="email"
                             defaultValue={f?.email ?? ""}
@@ -192,23 +247,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                                 if (redirectTo) url.searchParams.set("redirect", redirectTo)
                                 window.location.href = url.toString()
                             }}
-                        // onClick={() => {
-                        //     window.location.href = `${process.env.NEXT_PUBLIC_BASE_URL}/auth/google`
-                        // }}
-
                         >
-                            {/* <Button
-                            variant="outline"
-                            type="button"
-                            disabled={isPending}
-                            className="w-full"
-                            onClick={() => {
-                                startTransition(async () => {
-                                    await googleAction(redirectTo);
-                                });
-                            }}
-                        > */}
-
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 24 24"
@@ -247,6 +286,6 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                     </Field>
                 </FieldGroup>
             </form>
-        </div >
+        </div>
     )
 }
