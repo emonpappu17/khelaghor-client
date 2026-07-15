@@ -23,6 +23,93 @@ export type DeleteSlotState = ActionState<{ deleted: boolean }>
 
 // ─── Field Actions ────────────────────────────────────────
 
+// export async function createFieldAction(
+//     _prev: CreateFieldState,
+//     formData: FormData
+// ): Promise<CreateFieldState> {
+//     const raw = {
+//         name: formData.get("name") as string,
+//         sportType: formData.get("sportType") as string,
+//         description: formData.get("description") as string,
+//         maxPlayers: formData.get("maxPlayers") as string || undefined,
+//         facilities: formData.get("facilities") as string || undefined,
+//         division: formData.get("division") as string,
+//         address: formData.get("address") as string,
+//         area: formData.get("area") as string,
+//     }
+//     console.log('raw==>', raw);
+//     const parsed = createFieldSchema.safeParse(raw)
+//     if (!parsed.success) {
+//         return {
+//             errors: zodErrors(parsed.error),
+//             fields: {
+//                 name: raw.name ?? "",
+//                 sportType: raw.sportType ?? "",
+//                 description: raw.description ?? "",
+//                 maxPlayers: raw.maxPlayers ?? "",
+//                 facilities: raw.facilities ?? "",
+//                 division: raw.division ?? "",
+//                 address: raw.address ?? "",
+//                 area: raw.area ?? "",
+//             },
+//         }
+//     }
+
+//     // console.log('parsed==>', parsed);
+
+//     const apiFormData = new FormData()
+//     apiFormData.set("name", parsed.data.name)
+//     apiFormData.set("sportType", parsed.data.sportType)
+//     apiFormData.set("description", parsed.data.description)
+//     if (parsed.data.maxPlayers) {
+//         apiFormData.set("maxPlayers", String(parsed.data.maxPlayers))
+//     }
+//     apiFormData.set("division", parsed.data.division)
+//     apiFormData.set("address", parsed.data.address)
+//     apiFormData.set("area", parsed.data.area)
+
+//     if (parsed.data.facilities) {
+//         parsed.data.facilities
+//             .split(",")
+//             .map((f) => f.trim())
+//             .filter(Boolean)
+//             .forEach((f) => apiFormData.append("facilities", f))
+//     }
+
+//     const files = formData.getAll("files") as File[]
+//     files.forEach((file) => {
+//         if (file && file.size > 0) apiFormData.append("files", file)
+//     })
+//     // console.log(' apiFormData==>', apiFormData);
+//     const accessToken = await getAccessToken();
+//     const response = await apiFetch.post("/fields", { body: apiFormData, accessToken })
+//     const res = await parseResponse<Field>(response)
+
+//     // console.log('res==>', res);
+
+//     if (!res.success) {
+//         return {
+//             errors: mapApiErrors(res, [
+//                 "name", "sportType", "description", "maxPlayers",
+//                 "facilities", "division", "address", "area",
+//             ]),
+//             fields: {
+//                 name: raw.name ?? "",
+//                 sportType: raw.sportType ?? "",
+//                 description: raw.description ?? "",
+//                 maxPlayers: raw.maxPlayers ?? "",
+//                 facilities: raw.facilities ?? "",
+//                 division: raw.division ?? "",
+//                 address: raw.address ?? "",
+//                 area: raw.area ?? "",
+//             },
+//         }
+//     }
+
+//     updateTag("my-field")
+//     return { success: true, message: "Field created successfully!", data: res.data }
+// }
+
 export async function createFieldAction(
     _prev: CreateFieldState,
     formData: FormData
@@ -31,31 +118,32 @@ export async function createFieldAction(
         name: formData.get("name") as string,
         sportType: formData.get("sportType") as string,
         description: formData.get("description") as string,
-        maxPlayers: formData.get("maxPlayers") as string || undefined,
-        facilities: formData.get("facilities") as string || undefined,
+        maxPlayers: (formData.get("maxPlayers") as string) || undefined,
+        facilities: (formData.get("facilities") as string) || undefined,
         division: formData.get("division") as string,
         address: formData.get("address") as string,
         area: formData.get("area") as string,
     }
-    console.log('raw==>', raw);
+
+    // Normalized version for display back in the form (Record<string, string>)
+    const fieldsForDisplay: Record<string, string> = {
+        name: raw.name ?? "",
+        sportType: raw.sportType ?? "",
+        description: raw.description ?? "",
+        maxPlayers: raw.maxPlayers ?? "",
+        facilities: raw.facilities ?? "",
+        division: raw.division ?? "",
+        address: raw.address ?? "",
+        area: raw.area ?? "",
+    }
+
     const parsed = createFieldSchema.safeParse(raw)
     if (!parsed.success) {
         return {
             errors: zodErrors(parsed.error),
-            fields: {
-                name: raw.name ?? "",
-                sportType: raw.sportType ?? "",
-                description: raw.description ?? "",
-                maxPlayers: raw.maxPlayers ?? "",
-                facilities: raw.facilities ?? "",
-                division: raw.division ?? "",
-                address: raw.address ?? "",
-                area: raw.area ?? "",
-            },
+            fields: fieldsForDisplay,
         }
     }
-
-    // console.log('parsed==>', parsed);
 
     const apiFormData = new FormData()
     apiFormData.set("name", parsed.data.name)
@@ -80,34 +168,37 @@ export async function createFieldAction(
     files.forEach((file) => {
         if (file && file.size > 0) apiFormData.append("files", file)
     })
-    // console.log(' apiFormData==>', apiFormData);
-    const accessToken = await getAccessToken();
-    const response = await apiFetch.post("/fields", { body: apiFormData, accessToken })
-    const res = await parseResponse<Field>(response)
 
-    // console.log('res==>', res);
+    try {
+        const accessToken = await getAccessToken()
+        const response = await apiFetch.post("/fields", { body: apiFormData, accessToken })
+        const res = await parseResponse<Field>(response)
 
-    if (!res.success) {
+        if (!res.success) {
+            return {
+                errors: mapApiErrors(res, [
+                    "name", "sportType", "description", "maxPlayers",
+                    "facilities", "division", "address", "area",
+                ]),
+                fields: fieldsForDisplay,
+            }
+        }
+
+        updateTag("my-field")
+        return { success: true, message: "Field created successfully!", data: res.data }
+    } catch (err) {
+        console.error("createFieldAction unexpected error:", err)
+
+        const message =
+            err instanceof TypeError && err.message === "fetch failed"
+                ? "Could not reach the server. Please check your connection and try again."
+                : "Something went wrong while creating the field. Please try again."
+
         return {
-            errors: mapApiErrors(res, [
-                "name", "sportType", "description", "maxPlayers",
-                "facilities", "division", "address", "area",
-            ]),
-            fields: {
-                name: raw.name ?? "",
-                sportType: raw.sportType ?? "",
-                description: raw.description ?? "",
-                maxPlayers: raw.maxPlayers ?? "",
-                facilities: raw.facilities ?? "",
-                division: raw.division ?? "",
-                address: raw.address ?? "",
-                area: raw.area ?? "",
-            },
+            errors: { _form: [message] },
+            fields: fieldsForDisplay,
         }
     }
-
-    updateTag("my-field")
-    return { success: true, message: "Field created successfully!", data: res.data }
 }
 
 export async function updateFieldAction(
