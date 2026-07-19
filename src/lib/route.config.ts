@@ -28,6 +28,7 @@ export const ROUTES = {
     // Host
     HOST_FIELDS: "/host/field",
     HOST_BOOKINGS: "/host/bookings",
+    HOST_NOTIFICATIONS: "/host/notifications",
 
     // Admin
     ADMIN_USERS: "/admin/users",
@@ -35,6 +36,7 @@ export const ROUTES = {
     ADMIN_FIELDS: "/admin/fields",
     ADMIN_BOOKINGS: "/admin/bookings",
     ADMIN_REVIEWS: "/admin/reviews",
+    ADMIN_NOTIFICATIONS: "/admin/notifications",
 } as const;
 
 

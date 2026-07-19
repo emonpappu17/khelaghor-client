@@ -14,7 +14,7 @@ type PageProps = {
   }>
 }
 
-export default function NotificationsPage({ searchParams }: PageProps) {
+export default function HostNotificationsPage({ searchParams }: PageProps) {
   return (
     <div className="space-y-6">
       <div>
@@ -22,7 +22,7 @@ export default function NotificationsPage({ searchParams }: PageProps) {
           Notifications
         </h1>
         <p className="mt-1 text-on-surface-variant">
-          Stay updated with booking confirmations, reminders, and platform announcements.
+          Stay updated with booking confirmations, new reviews, and platform announcements.
         </p>
       </div>
 

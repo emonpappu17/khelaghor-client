@@ -4,7 +4,7 @@ import { NotificationsPageContent } from "@/components/modules/dashboard/user/no
 
 export const metadata: Metadata = {
   title: "Notifications | Khelaghor Dashboard",
-  description: "View your notifications and updates from Khelaghor.",
+  description: "View platform notifications and updates.",
 }
 
 type PageProps = {
@@ -14,7 +14,7 @@ type PageProps = {
   }>
 }
 
-export default function NotificationsPage({ searchParams }: PageProps) {
+export default function AdminNotificationsPage({ searchParams }: PageProps) {
   return (
     <div className="space-y-6">
       <div>
@@ -22,7 +22,7 @@ export default function NotificationsPage({ searchParams }: PageProps) {
           Notifications
         </h1>
         <p className="mt-1 text-on-surface-variant">
-          Stay updated with booking confirmations, reminders, and platform announcements.
+          View booking alerts, system messages, and platform announcements.
         </p>
       </div>
 

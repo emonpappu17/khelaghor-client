@@ -61,7 +61,7 @@ export async function forwardAuthCookies(
     const parsedCookies = setCookieParser.parse(setCookies)
 
     for (const cookie of parsedCookies) {
-        console.log('cookie==>', cookie);
+        // console.log('cookie==>', cookie);
         cookieStore.set(cookie.name, cookie.value, {
             httpOnly: cookie.httpOnly,
             secure: cookie.secure,

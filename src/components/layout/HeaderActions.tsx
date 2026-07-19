@@ -292,6 +292,18 @@ import {
 import { logoutAction } from "@/actions/auth.actions"
 import React from "react"
 
+function getNotificationsUrl(role?: string): string {
+  switch (role) {
+    case "ADMIN":
+    case "SUPER_ADMIN":
+      return "/admin/notifications"
+    case "HOST":
+      return "/host/notifications"
+    default:
+      return "/user/notifications"
+  }
+}
+
 export default function HeaderActions({
   user,
   unreadCount = 0,
@@ -325,8 +337,8 @@ export default function HeaderActions({
     <div className="flex items-center gap-3">
       {/* Notification Icon */}
       <Link
-        href="/user/notifications"
-        aria-current={pathname === "/user/notifications" ? "page" : undefined}
+        href={getNotificationsUrl(user.role)}
+        aria-current={pathname === getNotificationsUrl(user.role) ? "page" : undefined}
         className="relative inline-flex h-10 w-10 items-center justify-center rounded-lg border border-white/5 bg-surface-container text-on-surface-variant hover:bg-white/5 transition-colors"
         aria-label="Notifications"
       >

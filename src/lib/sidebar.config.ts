@@ -75,6 +75,11 @@ export const hostNavItems: NavItem[] = [
         url: ROUTES.HOST_BOOKINGS,
         icon: "bookings",
     },
+    {
+        title: "Notifications",
+        url: ROUTES.HOST_NOTIFICATIONS,
+        icon: "notifications",
+    },
 ];
 
 export const adminNavItems: NavItem[] = [
@@ -102,6 +107,11 @@ export const adminNavItems: NavItem[] = [
         title: "Reviews",
         url: ROUTES.ADMIN_REVIEWS,
         icon: "reviews",
+    },
+    {
+        title: "Notifications",
+        url: ROUTES.ADMIN_NOTIFICATIONS,
+        icon: "notifications",
     },
 ];
 
