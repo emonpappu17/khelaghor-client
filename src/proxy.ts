@@ -14,14 +14,14 @@ import { getCookie, verifyTokenUser } from "./lib/cookie";
 export async function proxy(request: NextRequest) {
     const { pathname, search } = request.nextUrl;
 
-    console.log('pathname==>', pathname);
+    // console.log('pathname==>', pathname);
 
     if (isPublicRoute(pathname)) {
         return NextResponse.next();
     }
 
     const accessToken = await getCookie("accessToken");
-    console.log('accessToken==>', accessToken);
+    // console.log('accessToken==>', accessToken);
     const user = accessToken
         ? await verifyTokenUser()
         : null;

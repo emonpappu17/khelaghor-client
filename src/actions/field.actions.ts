@@ -293,7 +293,7 @@ export async function createSlotsAction(
         pricePerSlot: formData.get("pricePerSlot") as string,
     }
 
-    console.log('raw==>', raw);
+    // console.log('raw==>', raw);
 
     const parsed = createSlotsSchema.safeParse(raw)
     if (!parsed.success) {
