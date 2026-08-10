@@ -72,7 +72,7 @@ export function DataTable<TData extends RowData>({
 
     return (
         <div className="space-y-4">
-            <div className="overflow-hidden rounded-md border">
+            <div className="overflow-hidden rounded-md border bg-card/40">
                 <Table>
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
@@ -95,7 +95,7 @@ export function DataTable<TData extends RowData>({
                                     data-state={row.getIsSelected() && "selected"}
                                 >
                                     {row.getVisibleCells().map((cell) => (
-                                        <TableCell key={cell.id}>
+                                        <TableCell key={cell.id} className=" truncate">
                                             <table.FlexRender cell={cell} />
                                         </TableCell>
                                     ))}

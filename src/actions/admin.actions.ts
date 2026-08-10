@@ -116,7 +116,6 @@ export async function deleteUserAction(
 }
 
 export async function refreshUsersAction(): Promise<void> {
-  console.log("refreshUsersAction called <====");
   updateTag("users")
   return
 }

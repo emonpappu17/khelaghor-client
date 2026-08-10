@@ -122,7 +122,7 @@ export async function getUsers(
   queryParams.set("sortOrder", sortOrder)
   queryParams.set("page", String(page))
   queryParams.set("limit", String(limit))
-  console.log(queryParams);
+
   try {
     const response = await apiFetch.get(
       `/users?${queryParams.toString()}`,
@@ -130,7 +130,6 @@ export async function getUsers(
     )
 
     const res = await parseResponse<UsersListData>(response)
-    console.log(res);
     return res.success ? res : null
   } catch (error) {
     console.error("getUsers error:", error)

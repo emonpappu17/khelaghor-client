@@ -14,7 +14,6 @@ export async function updateProfileAction(
   formData: FormData
 ): Promise<ActionState> {
   try {
-    console.log('called here');
     const raw = {
       name: formData.get("name") as string,
       phone: (formData.get("phone") as string) || undefined,
