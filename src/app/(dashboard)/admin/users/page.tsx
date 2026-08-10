@@ -1,39 +1,37 @@
-import { AdminUsersSkeleton } from "@/components/modules/dashboard/admin/users/AdminUsersSkeleton"
-import type { Metadata } from "next"
+import { AdminUsersTableContent } from "@/components/modules/dashboard/admin/users/AdminUsersTableContent"
+import { UsersTableSkeleton } from "@/components/modules/dashboard/admin/users/users-table-skeleton"
 import { Suspense } from "react"
-import dynamic from "next/dynamic"
 
-const AdminUsersPageContent = dynamic(
-  () => import("@/components/modules/dashboard/admin/users/AdminUsersPageContent"),
-  { ssr: true }
-)
-
-export const metadata: Metadata = {
-  title: "Manage Users | Khelaghor Admin",
-  description: "View, filter, and manage all registered users on Khelaghor.",
+interface AdminUsersPageProps {
+  searchParams: Promise<Record<string, string | undefined>>
 }
 
-type Props = {
-  searchParams: Promise<{
-    page?: string
-    role?: string
-    status?: string
-  }>
-}
+export default async function AdminUsersPage({
+  searchParams,
+}: AdminUsersPageProps) {
+  const params = await searchParams
 
-export default async function AdminUsersPage({ searchParams }: Props) {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-6">
       <div>
-        <h1 className="font-headline text-3xl font-bold text-on-surface">Users</h1>
-        <p className="mt-1 text-on-surface-variant">
-          View all registered users — filter by role, status, and manage accounts.
+        <h1 className="text-2xl font-semibold tracking-tight">Users</h1>
+        <p className="text-sm text-muted-foreground">
+          Manage platform users, hosts, and admins.
         </p>
       </div>
 
-      <Suspense fallback={<AdminUsersSkeleton />}>
-        <AdminUsersPageContent searchParams={searchParams} />
+      {/*
+        Reading searchParams makes this subtree dynamic, which is exactly
+        what you want with cacheComponents on: the shell above renders
+        instantly, and only this part suspends/streams when filters change.
+        `key` forces a clean remount per param combo instead of reusing
+        stale Suspense state.
+      */}
+      <Suspense fallback={<UsersTableSkeleton />} key={JSON.stringify(params)}>
+        <AdminUsersTableContent searchParams={params} />
       </Suspense>
     </div>
   )
 }
+
+

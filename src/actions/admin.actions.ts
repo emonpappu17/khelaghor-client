@@ -114,3 +114,7 @@ export async function deleteUserAction(
     }
   }
 }
+
+export async function refreshUsersAction(): Promise<void> {
+  updateTag("users")
+}
